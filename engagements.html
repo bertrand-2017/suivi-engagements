@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivi des engagements</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --primary:       #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark:  #1e40af;
+  --accent:        #059669;
+  --accent-dark:   #047857;
+  --danger:        #dc2626;
+  --gray-50:  #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-500: #64748b;
+  --gray-700: #334155;
+  --gray-900: #0f172a;
+  --sidebar-w: 250px;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; background: var(--gray-50); color: var(--gray-900); display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+#sidebar { width: var(--sidebar-w); background: var(--primary-dark); color: #fff; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+#sidebar .logo { padding: 18px 16px 14px; border-bottom: 1px solid rgba(255,255,255,.15); display: flex; align-items: center; gap: 10px; }
+#sidebar .logo img { height: 38px; width: auto; }
+#sidebar .logo .app-title { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.3; }
+#sidebar .logo .app-subtitle { font-size: 10px; color: rgba(255,255,255,.6); font-weight: 500; }
+#sidebar nav { flex: 1; padding: 10px 0; overflow-y: auto; }
+#sidebar nav a { display: flex; align-items: center; gap: 9px; padding: 9px 16px; color: rgba(255,255,255,.78); text-decoration: none; font-size: 13.5px; font-weight: 600; transition: background .15s; cursor: pointer; border: none; background: none; width: 100%; }
+#sidebar nav a:hover, #sidebar nav a.active { background: rgba(255,255,255,.13); color: #fff; }
+#sidebar nav a .ico { width: 18px; text-align: center; font-size: 14px; flex-shrink: 0; }
+#sidebar .role-badge { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.12); font-size: 12px; }
+#sidebar .role-badge strong { display: block; color: #6ee7b7; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-bottom: 2px; }
+#sidebar .role-badge span { opacity: .8; font-size: 13px; }
+
+/* TOPBAR */
+#topbar { position: fixed; top: 0; left: var(--sidebar-w); right: 0; height: 54px; background: #fff; border-bottom: 2px solid var(--accent); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+#topbar h2 { font-size: 15px; font-weight: 700; color: var(--primary-dark); }
+#topbar .actions { display: flex; align-items: center; gap: 10px; }
+
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); font-size: 13.5px; font-weight: 700; cursor: pointer; border: none; transition: all .15s; font-family: inherit; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); }
+.btn-secondary:hover { background: var(--gray-200); }
+.btn-danger { background: #fee2e2; color: var(--danger); }
+.btn-danger:hover { background: #fecaca; }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+
+/* MAIN */
+#main { margin-left: var(--sidebar-w); margin-top: 54px; flex: 1; padding: 28px 32px; max-width: 1200px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* CARDS */
+.card { background: #fff; border-radius: 10px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 20px; }
+.card-body { padding: 20px 22px; }
+.card-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--gray-500); margin-bottom: 14px; }
+
+/* TABLE */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--gray-500); border-bottom: 2px solid var(--gray-200); background: var(--gray-50); }
+td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--gray-50); }
+
+/* BADGE */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; gap: 4px; background: var(--gray-100); color: var(--gray-700); }
+
+/* FORM */
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--gray-700); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 13.5px; font-family: inherit; background: #fff; color: var(--gray-900); transition: border-color .15s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+/* FILTERS */
+.filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; align-items: center; }
+.filters input, .filters select { padding: 7px 12px; border: 1.5px solid var(--gray-200); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; }
+.filters input { min-width: 220px; }
+.filters select { min-width: 160px; }
+.filters input:focus, .filters select:focus { outline: none; border-color: var(--primary); }
+
+/* DASHBOARD */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.stat-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); border-left: 4px solid var(--primary); }
+.stat-card .val { font-size: 28px; font-weight: 800; color: var(--primary-dark); line-height: 1; margin-bottom: 4px; }
+.stat-card .lbl { font-size: 12px; font-weight: 600; color: var(--gray-500); }
+.stat-card .sub { font-size: 11px; color: var(--gray-500); margin-top: 3px; }
+.progress-bar-wrap { background: #fff; border-radius: 10px; padding: 16px 20px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 20px; }
+.progress-bar-outer { height: 12px; background: var(--gray-100); border-radius: 999px; margin: 8px 0; overflow: hidden; }
+.progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; transition: width .6s; }
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.chart-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); }
+.chart-card h4 { font-size: 12px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+.chart-wrap { height: 200px; position: relative; }
+@media (max-width: 700px) { .charts-row { grid-template-columns: 1fr; } }
+
+/* OVERLAYS / MODALS */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+.overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 12px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.2); display: flex; flex-direction: column; max-height: 90vh; }
+.modal-header { padding: 18px 22px 14px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.modal-header h3 { font-size: 16px; font-weight: 800; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray-500); line-height: 1; padding: 0 4px; }
+.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+
+/* TABS */
+.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-200); margin-bottom: 16px; }
+.tab { padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; background: none; color: var(--gray-500); font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* HISTORY */
+.history-list { display: flex; flex-direction: column; gap: 8px; }
+.history-item { font-size: 12.5px; padding: 8px 12px; background: var(--gray-50); border-radius: 6px; border-left: 3px solid var(--gray-300); }
+.history-item .hi-date { font-size: 11px; color: var(--gray-500); margin-bottom: 2px; }
+
+/* ADJOINTS */
+.adjoints-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.adjoint-card { background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); display: flex; align-items: center; gap: 14px; }
+.adjoint-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: var(--gray-200); flex-shrink: 0; }
+.adjoint-avatar-placeholder { width: 52px; height: 52px; border-radius: 50%; background: var(--primary-dark); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+.adjoint-info { flex: 1; min-width: 0; }
+.adjoint-info .name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.adjoint-info .role { font-size: 11.5px; color: var(--gray-500); margin-bottom: 4px; }
+.adjoint-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* STATUTS */
+.statuts-list { display: flex; flex-direction: column; gap: 8px; }
+.statut-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--gray-50); border-radius: 8px; border: 1px solid var(--gray-200); }
+.statut-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.statut-label { flex: 1; font-weight: 600; font-size: 14px; }
+
+/* THEMES */
+.themes-list { display: flex; flex-direction: column; gap: 8px; }
+.theme-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--gray-50); border-radius: 8px; border: 1px solid var(--gray-200); }
+.theme-label { flex: 1; font-weight: 600; font-size: 14px; }
+
+/* PUBLIC */
+.public-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 10px; }
+#pub-header { background: var(--primary-dark); color: #fff; padding: 32px 24px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+#pub-header h1 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+#pub-header p { opacity: .8; font-size: 14px; }
+
+/* LOGIN */
+#login-page { display: none; position: fixed; inset: 0; background: var(--primary-dark); align-items: center; justify-content: center; z-index: 300; }
+#login-page.show { display: flex; }
+.login-box { background: #fff; border-radius: 14px; padding: 36px 32px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.login-logo { text-align: center; margin-bottom: 10px; }
+.login-logo img { height: 56px; width: auto; }
+.login-box h2 { font-size: 20px; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; text-align: center; }
+.login-box p { font-size: 13px; color: var(--gray-500); text-align: center; margin-bottom: 22px; }
+
+/* EMPTY */
+.empty-state { text-align: center; padding: 48px 24px; color: var(--gray-500); }
+.empty-state .ico { font-size: 40px; margin-bottom: 12px; }
+
+/* PRINT */
+@media print { #sidebar, #topbar, .btn, .filters, .modal, .overlay { display: none !important; } #main { margin: 0; padding: 0; } .page { display: block !important; } }
+.no-print { }
+@media print { .no-print { display: none !important; } }
+
+/* CONFIG COLOR PICKER */
+.color-pair { display: flex; gap: 8px; align-items: center; }
+.color-pair input[type=color] { width: 40px; height: 36px; padding: 2px; border: 1.5px solid var(--gray-300); border-radius: 6px; cursor: pointer; }
+.color-pair input[type=text] { flex: 1; }
+</style>
+</head>
+<body>
+
+<!-- BANDEAU DÉMO (affiché uniquement en ?demo=1) -->
+<div id="demo-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:#f59e0b;color:#78350f;text-align:center;padding:7px 16px;font-size:12.5px;font-weight:700;font-family:'Nunito',sans-serif;letter-spacing:.02em">
+  ⚡ MODE DÉMO — agence <strong>2017</strong> · Les données sont sauvegardées localement dans ce navigateur · <a href="mailto:contact@agence2017.fr" style="color:#78350f;text-decoration:underline">Demander une démo personnalisée</a>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay" style="position:fixed;inset:0;background:var(--primary-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:400;gap:16px">
+  <div id="loading-logo-wrap"></div>
+  <div style="color:rgba(255,255,255,.75);font-size:13px;font-weight:600;font-family:'Nunito',sans-serif">Chargement des données…</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-page">
+  <div class="login-box">
+    <div class="login-logo" id="login-logo-wrap"></div>
+    <h2 id="login-title">Espace de pilotage</h2>
+    <p id="login-subtitle">Suivi des engagements municipaux</p>
+    <div class="form-group"><label>Identifiant</label><input type="text" id="login-user" autocomplete="username"></div>
+    <div class="form-group"><label>Mot de passe</label><input type="password" id="login-pass" autocomplete="current-password"></div>
+    <div id="login-error" style="display:none;padding:8px 12px;background:#fee2e2;color:var(--danger);border-radius:6px;font-size:13px;margin-bottom:8px;font-weight:600"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">Se connecter</button>
+    <div style="margin-top:14px;text-align:center"><a href="#" onclick="showPublic()" style="font-size:12px;color:var(--gray-500);font-weight:600">→ Voir les engagements (accès public)</a></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="logo">
+    <div id="sidebar-logo-wrap"></div>
+    <div>
+      <div class="app-title" id="sidebar-title">Suivi des engagements</div>
+      <div class="app-subtitle" id="sidebar-subtitle">Mandat municipal</div>
+    </div>
+  </div>
+  <nav>
+    <a onclick="showPage('dashboard')" id="nav-dashboard"><span class="ico">📊</span> Tableau de bord</a>
+    <a onclick="showPage('promises')"  id="nav-promises"><span class="ico">📋</span> Nos engagements</a>
+    <a onclick="showPage('public')"    id="nav-public"><span class="ico">🌐</span> Vue publique</a>
+    <a onclick="showPage('themes')"    id="nav-themes"   class="admin-only"><span class="ico">🏷</span> Thèmes</a>
+    <a onclick="showPage('adjoints')"  id="nav-adjoints" class="admin-only"><span class="ico">👥</span> Adjoints & élus</a>
+    <a onclick="showPage('statuts')"   id="nav-statuts"  class="admin-only"><span class="ico">⚙️</span> Statuts</a>
+    <a onclick="showPage('export')"    id="nav-export"><span class="ico">📤</span> Export</a>
+    <a onclick="showPage('admin')"     id="nav-admin"    class="admin-only"><span class="ico">🔐</span> Administration</a>
+  </nav>
+  <div class="role-badge">
+    <strong id="role-label">—</strong>
+    <span id="user-label">—</span>
+    <button onclick="doLogout()" style="margin-top:8px;background:rgba(255,255,255,.15);border:none;color:#fff;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;width:100%">Déconnexion</button>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <h2 id="page-title">Tableau de bord</h2>
+  <div class="actions">
+    <span id="topbar-date" style="font-size:12px;color:var(--gray-500);font-weight:600"></span>
+    <button class="btn btn-primary btn-sm" id="btn-add-promise" style="display:none" onclick="openPromiseModal()">+ Ajouter</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div id="stats-grid" class="stats-grid"></div>
+  <div class="progress-bar-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <span id="progress-label" style="font-size:13px;font-weight:600;color:var(--gray-700)">—</span>
+      <span id="progress-pct" style="font-size:14px;font-weight:800;color:var(--primary)">0%</span>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="global-progress" style="width:0%"></div></div>
+  </div>
+  <div class="charts-row">
+    <div class="chart-card"><h4>Répartition par statut</h4><div class="chart-wrap"><canvas id="chart-status"></canvas></div></div>
+    <div class="chart-card"><h4>Engagements par horizon</h4><div class="chart-wrap"><canvas id="chart-timeline"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ENGAGEMENTS -->
+<div class="page" id="page-promises">
+  <div class="filters">
+    <input type="text" id="filter-search" placeholder="🔍 Rechercher…" oninput="renderPromises()">
+    <select id="filter-theme"   onchange="renderPromises()"><option value="">Tous les thèmes</option></select>
+    <select id="filter-status"  onchange="renderPromises()"><option value="">Tous les statuts</option></select>
+    <select id="filter-horizon" onchange="renderPromises()"><option value="">Tous les horizons</option></select>
+    <select id="filter-adjoint" onchange="renderPromises()" class="admin-only"><option value="">Tous les adjoints</option></select>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr>
+      <th style="width:44%">Engagement</th>
+      <th>Thème</th>
+      <th>Horizon</th>
+      <th>Adjoint</th>
+      <th>Statut</th>
+      <th></th>
+    </tr></thead>
+    <tbody id="promises-tbody"></tbody>
+  </table></div>
+</div>
+
+<!-- THEMES -->
+<div class="page" id="page-themes">
+  <div class="card" style="max-width:520px"><div class="card-body">
+    <div class="card-title">Thèmes</div>
+    <div class="themes-list" id="themes-list"></div>
+    <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="openThemeModal()">+ Ajouter un thème</button>
+  </div></div>
+</div>
+
+<!-- ADJOINTS -->
+<div class="page" id="page-adjoints">
+  <div class="adjoints-grid" id="adjoints-grid"></div>
+  <button class="btn btn-primary btn-sm" style="margin-top:4px" onclick="openAdjointModal()">+ Ajouter un adjoint</button>
+</div>
+
+<!-- STATUTS -->
+<div class="page" id="page-statuts">
+  <div class="card" style="max-width:480px"><div class="card-body">
+    <div class="card-title">Statuts d'avancement</div>
+    <div class="statuts-list" id="statuts-list"></div>
+    <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="openStatusModal()">+ Ajouter un statut</button>
+  </div></div>
+</div>
+
+<!-- EXPORT -->
+<div class="page" id="page-export">
+  <div class="card" style="max-width:500px"><div class="card-body">
+    <div class="card-title">Export des données</div>
+    <p style="font-size:13.5px;color:var(--gray-700);margin-bottom:16px">Exportez la liste des engagements avec leur statut courant.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="exportCSV()">⬇ Exporter CSV</button>
+      <button class="btn btn-secondary" onclick="exportPDF()">🖨️ Vue impression / PDF</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- PUBLIC -->
+<div class="page" id="page-public">
+  <div id="pub-header">
+    <h1 id="pub-title">Nos engagements</h1>
+  </div>
+  <div class="filters">
+    <input type="text" id="pub-search" placeholder="🔍 Rechercher…" oninput="renderPublic()">
+    <select id="pub-theme"   onchange="renderPublic()"><option value="">Tous les thèmes</option></select>
+    <select id="pub-status"  onchange="renderPublic()"><option value="">Tous les statuts</option></select>
+    <select id="pub-horizon" onchange="renderPublic()"><option value="">Tous les horizons</option></select>
+  </div>
+  <div id="public-list"></div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div class="card" style="max-width:700px;margin-bottom:20px"><div class="card-body">
+    <div class="card-title">Personnalisation</div>
+    <div id="config-form"></div>
+    <button class="btn btn-primary btn-sm" style="margin-top:4px" onclick="saveConfig()">Enregistrer la configuration</button>
+  </div></div>
+  <div class="card" style="max-width:700px"><div class="card-body">
+    <div class="card-title">Utilisateurs</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Identifiant</th><th>Nom</th><th>Rôle</th><th>Adjoint lié</th><th></th></tr></thead>
+      <tbody id="users-tbody"></tbody>
+    </table></div>
+    <button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="openUserModal()">+ Ajouter un utilisateur</button>
+  </div></div>
+</div>
+
+</div><!-- /main -->
+
+<!-- MODAL ENGAGEMENT -->
+<div class="overlay" id="promise-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Engagement</h3>
+      <button class="modal-close" onclick="closeModal('promise-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <button class="tab active" id="tab-info"    onclick="switchTab('tab-info')">Informations</button>
+        <button class="tab"        id="tab-history" onclick="switchTab('tab-history')">Historique</button>
+      </div>
+      <div id="tab-info-content">
+        <input type="hidden" id="edit-id">
+        <div class="form-group"><label>Libellé</label><textarea id="edit-label" rows="3"></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>Thème</label><select id="edit-theme"></select></div>
+          <div class="form-group"><label>Adjoint responsable</label><select id="edit-adjoint"></select></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div class="form-group"><label>Statut</label><select id="edit-status"></select></div>
+          <div class="form-group"><label>Horizon de mise en œuvre</label>
+            <select id="edit-horizon">
+              <option value="">— Non planifié —</option>
+              <option value="h1">Court terme — 2026-2027</option>
+              <option value="h2">Moyen terme — 2028-2029</option>
+              <option value="h3">Long terme — 2030-2032</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Note interne</label><textarea id="edit-note" rows="2" placeholder="Visible uniquement par les élus connectés"></textarea></div>
+        <div class="form-group"><label>Commentaire public</label><textarea id="edit-public-comment" rows="2" placeholder="Visible par tous sur la vue publique"></textarea></div>
+      </div>
+      <div id="tab-history-content" style="display:none">
+        <div class="history-list" id="history-list"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('promise-modal')">Annuler</button>
+      <button class="btn btn-primary" id="btn-save" onclick="savePromise()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL USER -->
+<div class="overlay" id="user-modal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header"><h3 id="user-modal-title">Utilisateur</h3><button class="modal-close" onclick="closeModal('user-modal')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="u-id">
+      <div class="form-group"><label>Identifiant</label><input type="text" id="u-login"></div>
+      <div class="form-group"><label>Nom complet</label><input type="text" id="u-name"></div>
+      <div class="form-group"><label id="u-pass-label">Mot de passe</label><input type="password" id="u-pass" placeholder=""></div>
+      <div class="form-group"><label>Rôle</label>
+        <select id="u-role">
+          <option value="admin">Administrateur</option>
+          <option value="adjoint">Adjoint / Élu</option>
+          <option value="lecteur">Lecteur</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Adjoint lié</label><select id="u-adjoint"><option value="">— Aucun —</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('user-modal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveUser()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GÉNÉRIQUE (thèmes, statuts, adjoints) -->
+<div class="overlay" id="edit-modal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header"><h3 id="edit-modal-title">Modifier</h3><button class="modal-close" onclick="closeModal('edit-modal')">×</button></div>
+    <div class="modal-body" id="edit-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('edit-modal')">Annuler</button>
+      <button class="btn btn-primary" onclick="runEditModalSave()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONSTANTES ────────────────────────────────────────────────────────────────
+const API_URL   = 'api.php';
+const DEMO_MODE = new URLSearchParams(window.location.search).has('demo');
+const DEMO_KEY  = 'demo2017_data';
+
+const HORIZONS = [
+  {id:'h1', label:'Court terme — 2026-2027', color:'#2563eb'},
+  {id:'h2', label:'Moyen terme — 2028-2029', color:'#059669'},
+  {id:'h3', label:'Long terme — 2030-2032',  color:'#d97706'},
+];
+
+// ── DONNÉES PAR DÉFAUT ────────────────────────────────────────────────────────
+const DEFAULT_STATUSES = [
+  {id:'s1', label:'En attente',              color:'#94a3b8'},
+  {id:'s2', label:'À l\'étude',              color:'#38bdf8'},
+  {id:'s3', label:'En cours',                color:'#f59e0b'},
+  {id:'s4', label:'Réalisé',                 color:'#22c55e'},
+  {id:'s5', label:'Partiellement réalisé',   color:'#a3e635'},
+  {id:'s6', label:'Abandonné',               color:'#f87171'},
+];
+
+const DEFAULT_THEMES = [
+  {id:'t1', name:'Cadre de vie & environnement'},
+  {id:'t2', name:'Services à la population'},
+  {id:'t3', name:'Développement & attractivité'},
+];
+
+const DEFAULT_ADJOINTS = [
+  {id:'a0', name:'Maire',              role:'Maire de la commune',                photo:''},
+  {id:'a1', name:'1er Adjoint',        role:'À personnaliser',                    photo:''},
+  {id:'a2', name:'2e Adjointe',        role:'À personnaliser',                    photo:''},
+];
+
+const DEFAULT_USERS = [
+  {id:'u1', login:'admin',   name:'Administrateur', pass:'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', role:'admin',   adjointId:''},
+  {id:'u2', login:'adjoint', name:'Élu démo',        pass:'c5a74a5181a87db48dba08ddcf759aacdc70ed58af6aa3c8db65015cf8ca3377', role:'adjoint', adjointId:'a1'},
+  {id:'u3', login:'lecteur', name:'Lecteur démo',     pass:'fee0570210d7777b41453bb788382e5626588e43489b9be7a15a0bfe990eaefe', role:'lecteur', adjointId:''},
+];
+// Mots de passe par défaut : admin/admin123 · adjoint/adjoint123 · lecteur/lecteur123
+
+const D = '2026-01-01';
+const SAMPLE_PROMISES = [
+  {id:'p1', label:'Rénover les équipements sportifs du quartier nord et mettre aux normes d\'accessibilité les vestiaires', themeId:'t1', adjointId:'a1', statusId:'s2', horizonId:'h1', note:'', publicComment:'', created:D, updated:D, history:[]},
+  {id:'p2', label:'Planter 200 arbres supplémentaires sur les axes principaux et dans les espaces verts existants', themeId:'t1', adjointId:'a2', statusId:'s1', horizonId:'h2', note:'', publicComment:'', created:D, updated:D, history:[]},
+  {id:'p3', label:'Étendre les horaires d\'ouverture de la bibliothèque municipale en soirée et le dimanche matin', themeId:'t2', adjointId:'a1', statusId:'s3', horizonId:'h1', note:'', publicComment:'Ouverture le mardi et jeudi jusqu\'à 19h dès septembre.', created:D, updated:D, history:[]},
+  {id:'p4', label:'Mettre en place un service de portage de repas à domicile pour les seniors isolés', themeId:'t2', adjointId:'a2', statusId:'s1', horizonId:'h2', note:'', publicComment:'', created:D, updated:D, history:[]},
+  {id:'p5', label:'Créer une pépinière d\'entreprises pour accueillir et accompagner les porteurs de projets locaux', themeId:'t3', adjointId:'a0', statusId:'s2', horizonId:'h3', note:'', publicComment:'', created:D, updated:D, history:[]},
+];
+
+const DEFAULT_CONFIG = {
+  appTitle:     'Suivi des engagements',
+  appSubtitle:  'Mandat municipal',
+  primaryColor: '#2563eb',
+  primaryDark:  '#1e40af',
+  accentColor:  '#059669',
+  logoUrl:      '',
+};
+
+// ── STORE ─────────────────────────────────────────────────────────────────────
+let statuses    = DEFAULT_STATUSES;
+let themes      = DEFAULT_THEMES;
+let adjoints    = DEFAULT_ADJOINTS;
+let promises    = SAMPLE_PROMISES;
+let users       = DEFAULT_USERS.map(u=>({...u})); // copie sans référence
+let config      = {...DEFAULT_CONFIG};
+let currentUser = null;
+
+async function persist(){
+  if(!currentUser || currentUser.id==='pub') return;
+  if(DEMO_MODE){
+    localStorage.setItem(DEMO_KEY, JSON.stringify({statuses,themes,adjoints,promises,users,config}));
+    return;
+  }
+  try{
+    await fetch(API_URL,{
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'save',statuses,themes,adjoints,promises,users,config})
+    });
+  }catch(e){console.error('Sauvegarde échouée',e);}
+}
+
+function applyServerData(d){
+  if(!d||typeof d!=='object') return false;
+  const hasData=!!(d.users?.length||d.promises?.length);
+  if(d.statuses?.length) statuses=d.statuses;
+  if(d.themes?.length)   themes=d.themes;
+  if(d.adjoints?.length) adjoints=d.adjoints;
+  if(d.promises?.length) promises=d.promises;
+  if(d.users?.length)    users=d.users;
+  if(d.config)           config={...DEFAULT_CONFIG,...d.config};
+  return hasData;
+}
+
+async function loadFromServer(){
+  if(DEMO_MODE){
+    try{const raw=localStorage.getItem(DEMO_KEY);if(raw)return applyServerData(JSON.parse(raw));}catch(e){}
+    return false;
+  }
+  try{
+    const r=await fetch(API_URL+'?action=load&t='+Date.now(),{credentials:'include'});
+    if(!r.ok) return false;
+    return applyServerData(await r.json());
+  }catch(e){
+    console.warn('Serveur inaccessible, données par défaut chargées.');
+    return false;
+  }
+}
+
+async function initializeServer(){
+  await migratePasswords();
+  if(DEMO_MODE){
+    localStorage.setItem(DEMO_KEY, JSON.stringify({statuses,themes,adjoints,promises,users,config}));
+    return;
+  }
+  try{
+    await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'initdata',statuses,themes,adjoints,promises,users,config})
+    });
+  }catch(e){console.error('Initialisation échouée',e);}
+}
+
+// ── CRYPTO ────────────────────────────────────────────────────────────────────
+async function hashPass(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function migratePasswords(){
+  const hexRe=/^[0-9a-f]{64}$/i;
+  for(const u of users){
+    if(u.pass && !hexRe.test(u.pass)) u.pass=await hashPass(u.pass);
+  }
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+async function doLogin(){
+  const login=document.getElementById('login-user').value.trim();
+  const h=await hashPass(document.getElementById('login-pass').value);
+  if(DEMO_MODE){
+    const u=users.find(x=>x.login===login&&x.pass===h);
+    if(!u){
+      const e=document.getElementById('login-error');
+      e.style.display='block'; e.textContent='Identifiants incorrects.'; return;
+    }
+    const safe={...u}; delete safe.pass;
+    currentUser=safe;
+    document.getElementById('login-page').classList.remove('show');
+    initApp(); return;
+  }
+  try{
+    const r=await fetch(API_URL,{
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'login',login,pass:h})
+    });
+    const data=await r.json();
+    if(!r.ok){
+      const e=document.getElementById('login-error');
+      e.style.display='block';
+      e.textContent=data.error||'Identifiants incorrects.'; return;
+    }
+    currentUser=data.user;
+    document.getElementById('login-page').classList.remove('show');
+    initApp();
+  }catch(e){
+    const err=document.getElementById('login-error');
+    err.style.display='block';
+    err.textContent='Erreur de connexion au serveur.';
+  }
+}
+function doLogout(){
+  if(!DEMO_MODE) fetch(API_URL,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:'{"action":"logout"}'}).catch(()=>{});
+  currentUser=null;
+  document.getElementById('login-page').classList.add('show');
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+}
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+function showPublic(){
+  currentUser={role:'public',name:'Visiteur',id:'pub'};
+  document.getElementById('login-page').classList.remove('show');
+  document.getElementById('sidebar').style.display='none';
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('main').style.marginLeft='0';
+  document.getElementById('main').style.marginTop='0';
+  populateFilters(); showPage('public');
+}
+
+// ── BRANDING ─────────────────────────────────────────────────────────────────
+function applyConfig(){
+  const c=config;
+  document.title=c.appTitle||'Suivi des engagements';
+  document.getElementById('sidebar-title').textContent=c.appTitle||'Suivi des engagements';
+  document.getElementById('sidebar-subtitle').textContent=c.appSubtitle||'Mandat municipal';
+  document.getElementById('login-title').textContent=c.appTitle||'Espace de pilotage';
+  document.getElementById('login-subtitle').textContent=c.appSubtitle||'Suivi des engagements municipaux';
+  document.getElementById('pub-title').textContent=c.appTitle||'Nos engagements';
+  // CSS variables
+  const r=document.documentElement.style;
+  if(c.primaryColor) r.setProperty('--primary',c.primaryColor);
+  if(c.primaryDark)  r.setProperty('--primary-dark',c.primaryDark);
+  if(c.accentColor)  r.setProperty('--accent',c.accentColor);
+  // Logo
+  ['loading-logo-wrap','login-logo-wrap','sidebar-logo-wrap'].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    if(c.logoUrl){
+      const sz=id==='sidebar-logo-wrap'?'38px':'56px';
+      el.innerHTML=`<img src="${c.logoUrl}" style="height:${sz};width:auto;max-width:160px" onerror="this.style.display='none'">`;
+    } else {
+      el.innerHTML='';
+    }
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function initApp(){
+  document.getElementById('user-label').textContent=currentUser.name;
+  document.getElementById('role-label').textContent={admin:'Administrateur',adjoint:'Adjoint / Élu',lecteur:'Lecteur'}[currentUser.role]||'—';
+  document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display=currentUser.role==='admin'?'':'none');
+  populateFilters(); showPage('dashboard');
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+let charts={};
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#sidebar nav a').forEach(a=>a.classList.remove('active'));
+  const pg=document.getElementById('page-'+id); if(pg) pg.classList.add('active');
+  const nv=document.getElementById('nav-'+id);  if(nv) nv.classList.add('active');
+  const titles={dashboard:'Tableau de bord',promises:'Nos engagements',themes:'Thèmes',adjoints:'Adjoints & élus',statuts:'Statuts d\'avancement',export:'Export',public:'Nos engagements',admin:'Administration'};
+  document.getElementById('page-title').textContent=titles[id]||id;
+  const canAdd=currentUser&&currentUser.role!=='lecteur'&&currentUser.role!=='public';
+  document.getElementById('btn-add-promise').style.display=(id==='promises'&&canAdd)?'inline-flex':'none';
+  if(id==='dashboard') renderDashboard();
+  if(id==='promises')  renderPromises();
+  if(id==='themes')    renderThemes();
+  if(id==='adjoints')  renderAdjoints();
+  if(id==='statuts')   renderStatuts();
+  if(id==='admin')     renderAdmin();
+  if(id==='public')    renderPublic();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function getStatus(id)  {return statuses.find(s=>s.id===id)||{label:'—',color:'#94a3b8'};}
+function getTheme(id)   {return themes.find(t=>t.id===id)||{name:'—'};}
+function getAdjoint(id) {return adjoints.find(a=>a.id===id)||{name:'—',role:''};}
+function getHorizon(id) {return HORIZONS.find(h=>h.id===id)||null;}
+function uid()          {return 'x'+Math.random().toString(36).slice(2)+Date.now().toString(36);}
+function now()          {return new Date().toISOString().slice(0,10);}
+
+function statusBadge(sid){
+  const s=getStatus(sid);
+  return `<span class="badge" style="background:${s.color}20;color:${s.color};border:1px solid ${s.color}44">${s.label}</span>`;
+}
+function horizonBadge(hid){
+  if(!hid) return '';
+  const h=getHorizon(hid); if(!h) return '';
+  return `<span class="badge" style="background:${h.color}18;color:${h.color};border:1px solid ${h.color}44;font-size:10px">${h.label}</span>`;
+}
+
+function populateFilters(){
+  [['filter-status','pub-status'],[],[]].flat();
+  const sfill=(id,arr,def)=>{const el=document.getElementById(id);if(!el)return;const cur=el.value;el.innerHTML=def;arr.forEach(x=>el.insertAdjacentHTML('beforeend',`<option value="${x.id||x.id}">${x.label||x.name}</option>`));el.value=cur;};
+  sfill('filter-theme',  themes,  '<option value="">Tous les thèmes</option>');
+  sfill('filter-status', statuses,'<option value="">Tous les statuts</option>');
+  sfill('filter-adjoint',adjoints,'<option value="">Tous les adjoints</option>');
+  sfill('pub-theme',     themes,  '<option value="">Tous les thèmes</option>');
+  sfill('pub-status',    statuses,'<option value="">Tous les statuts</option>');
+  sfill('edit-theme',    themes,  '<option value="">— Choisir —</option>');
+  sfill('edit-status',   statuses,'<option value="">— Choisir —</option>');
+  // Horizons (static)
+  ['filter-horizon','pub-horizon'].forEach(fid=>{
+    const el=document.getElementById(fid); if(!el) return;
+    const cur=el.value;
+    el.innerHTML='<option value="">Tous les horizons</option>';
+    HORIZONS.forEach(h=>el.insertAdjacentHTML('beforeend',`<option value="${h.id}">${h.label}</option>`));
+    el.value=cur;
+  });
+  // Adjoints
+  ['filter-adjoint','edit-adjoint','u-adjoint'].forEach(fid=>{
+    const el=document.getElementById(fid); if(!el) return;
+    const cur=el.value;
+    el.innerHTML=fid.startsWith('filter')?'<option value="">Tous les adjoints</option>':'<option value="">— Aucun —</option>';
+    adjoints.forEach(a=>el.insertAdjacentHTML('beforeend',`<option value="${a.id}">${a.name}</option>`));
+    el.value=cur;
+  });
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDashboard(){
+  const total=promises.length;
+  const done   =promises.filter(p=>p.statusId==='s4').length;
+  const partial=promises.filter(p=>p.statusId==='s5').length;
+  const inprog =promises.filter(p=>p.statusId==='s3').length;
+  const study  =promises.filter(p=>p.statusId==='s2').length;
+  const pct=total?Math.round((done+partial*0.5)/total*100):0;
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-card"><div class="val">${total}</div><div class="lbl">Engagements total</div></div>
+    <div class="stat-card" style="border-left-color:var(--accent)"><div class="val" style="color:var(--accent-dark)">${done}</div><div class="lbl">Réalisés</div><div class="sub">${total?Math.round(done/total*100):0}% du programme</div></div>
+    <div class="stat-card" style="border-left-color:#f59e0b"><div class="val" style="color:#b45309">${inprog}</div><div class="lbl">En cours</div></div>
+    <div class="stat-card" style="border-left-color:#38bdf8"><div class="val" style="color:#0369a1">${study}</div><div class="lbl">À l'étude</div></div>
+    <div class="stat-card" style="border-left-color:#a3e635"><div class="val" style="color:#4d7c0f">${partial}</div><div class="lbl">Partiellement réalisés</div></div>
+    <div class="stat-card" style="border-left-color:var(--primary-light)"><div class="val" style="color:var(--primary-dark)">${pct}%</div><div class="lbl">Taux d'avancement</div></div>`;
+  document.getElementById('global-progress').style.width=pct+'%';
+  document.getElementById('progress-label').textContent=`${done} engagements réalisés sur ${total}`;
+  document.getElementById('progress-pct').textContent=pct+'%';
+  renderCharts();
+}
+
+function renderCharts(){
+  Object.values(charts).forEach(c=>c.destroy()); charts={};
+  const font={family:'Nunito',size:11};
+  // Doughnut statuts
+  const counts={}; statuses.forEach(s=>{counts[s.id]=0;}); promises.forEach(p=>{if(counts[p.statusId]!==undefined)counts[p.statusId]++;});
+  charts.status=new Chart(document.getElementById('chart-status'),{
+    type:'doughnut',
+    data:{labels:statuses.map(s=>s.label),datasets:[{data:statuses.map(s=>counts[s.id]||0),backgroundColor:statuses.map(s=>s.color),borderWidth:2,borderColor:'#fff'}]},
+    options:{plugins:{legend:{position:'bottom',labels:{font,boxWidth:12,padding:6}}},responsive:true,maintainAspectRatio:false}
+  });
+  // Stacked bar horizons
+  const hLabels=[...HORIZONS.map(h=>h.label),'Non planifié'];
+  const hIds=[...HORIZONS.map(h=>h.id),''];
+  charts.timeline=new Chart(document.getElementById('chart-timeline'),{
+    type:'bar',
+    data:{labels:hLabels,datasets:statuses.map(s=>({
+      label:s.label,
+      data:hIds.map(hid=>promises.filter(p=>(p.horizonId||'')===(hid)&&p.statusId===s.id).length),
+      backgroundColor:s.color,borderRadius:3,borderWidth:0,
+    }))},
+    options:{
+      plugins:{legend:{position:'bottom',labels:{font,boxWidth:12,padding:6}}},
+      responsive:true,maintainAspectRatio:false,
+      scales:{x:{stacked:true,ticks:{font}},y:{stacked:true,beginAtZero:true,ticks:{font,stepSize:1}}}
+    }
+  });
+}
+
+// ── ENGAGEMENTS ───────────────────────────────────────────────────────────────
+function renderPromises(){
+  const q  =(document.getElementById('filter-search')?.value||'').toLowerCase();
+  const tid= document.getElementById('filter-theme')?.value;
+  const sid= document.getElementById('filter-status')?.value;
+  const hid= document.getElementById('filter-horizon')?.value;
+  const aid= document.getElementById('filter-adjoint')?.value;
+  let list=promises;
+  if(q)   list=list.filter(p=>p.label.toLowerCase().includes(q));
+  if(tid) list=list.filter(p=>p.themeId===tid);
+  if(sid) list=list.filter(p=>p.statusId===sid);
+  if(hid) list=list.filter(p=>p.horizonId===hid);
+  if(aid) list=list.filter(p=>p.adjointId===aid);
+  const tbody=document.getElementById('promises-tbody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="6" class="empty-state"><div class="ico">🔍</div><p>Aucun engagement trouvé.</p></td></tr>';return;}
+  const canEdit=currentUser.role==='admin'||(currentUser.role==='adjoint');
+  tbody.innerHTML=list.map(p=>{
+    const ownPromise=currentUser.role==='adjoint'?p.adjointId===currentUser.adjointId:true;
+    const editBtn=canEdit
+      ? (ownPromise
+          ? `<button class="btn btn-secondary btn-sm" onclick="openPromiseModal('${p.id}')">✏️</button>`
+          : `<button class="btn btn-secondary btn-sm" onclick="openPromiseModal('${p.id}')">👁</button>`)
+      : `<button class="btn btn-secondary btn-sm" onclick="openPromiseModal('${p.id}')">👁</button>`;
+    return `<tr>
+      <td style="max-width:320px"><span style="font-weight:600;line-height:1.4">${p.label}</span></td>
+      <td style="font-size:12px;color:var(--gray-500)">${getTheme(p.themeId).name}</td>
+      <td>${horizonBadge(p.horizonId)}</td>
+      <td style="font-size:12px">${getAdjoint(p.adjointId).name}</td>
+      <td>${statusBadge(p.statusId)}</td>
+      <td>${editBtn}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openPromiseModal(id){
+  const p=id?promises.find(x=>x.id===id):null;
+  const ownPromise=!id||(currentUser.role==='admin')||(p?.adjointId===currentUser.adjointId);
+  const ro=currentUser.role==='lecteur'||(currentUser.role==='adjoint'&&!ownPromise);
+  switchTab('tab-info');
+  document.getElementById('edit-id').value=id||'';
+  document.getElementById('edit-label').value=p?.label||'';
+  document.getElementById('edit-label').readOnly=ro;
+  document.getElementById('edit-note').value=p?.note||'';
+  document.getElementById('edit-note').readOnly=ro;
+  document.getElementById('edit-public-comment').value=p?.publicComment||'';
+  document.getElementById('edit-public-comment').readOnly=ro;
+  populateFilters();
+  document.getElementById('edit-theme').value=p?.themeId||themes[0]?.id||'';
+  document.getElementById('edit-theme').disabled=ro;
+  document.getElementById('edit-status').value=p?.statusId||statuses[0]?.id||'';
+  document.getElementById('edit-status').disabled=ro;
+  document.getElementById('edit-horizon').value=p?.horizonId||'';
+  document.getElementById('edit-horizon').disabled=ro;
+  document.getElementById('edit-adjoint').value=p?.adjointId||(currentUser.role==='adjoint'?currentUser.adjointId:adjoints[0]?.id||'');
+  document.getElementById('edit-adjoint').disabled=ro||currentUser.role==='adjoint';
+  document.getElementById('btn-save').style.display=ro?'none':'inline-flex';
+  document.getElementById('modal-title').textContent=id?(ro?'Détail engagement':'Modifier l\'engagement'):'Nouvel engagement';
+  // History
+  const hl=document.getElementById('history-list');
+  hl.innerHTML=(p?.history?.length)
+    ? p.history.slice().reverse().map(h=>`<div class="history-item"><div class="hi-date">${h.date} — ${h.by||'?'}</div><div>${h.text}</div></div>`).join('')
+    : '<div style="color:var(--gray-500);font-size:13px">Aucune modification enregistrée.</div>';
+  document.getElementById('promise-modal').classList.add('open');
+}
+
+function savePromise(){
+  const id=document.getElementById('edit-id').value;
+  const label=document.getElementById('edit-label').value.trim();
+  if(!label){alert('Le libellé est requis.');return;}
+  const newData={
+    themeId:  document.getElementById('edit-theme').value,
+    adjointId:document.getElementById('edit-adjoint').value,
+    statusId: document.getElementById('edit-status').value,
+    horizonId:document.getElementById('edit-horizon').value,
+    note:     document.getElementById('edit-note').value.trim(),
+    publicComment: document.getElementById('edit-public-comment').value.trim(),
+    updated:  now(),
+  };
+  if(id){
+    const p=promises.find(x=>x.id===id);
+    if(p){
+      const changes=[];
+      if(p.statusId!==newData.statusId) changes.push(`Statut : ${getStatus(p.statusId).label} → ${getStatus(newData.statusId).label}`);
+      if(p.horizonId!==newData.horizonId) changes.push(`Horizon : ${getHorizon(p.horizonId)?.label||'Non planifié'} → ${getHorizon(newData.horizonId)?.label||'Non planifié'}`);
+      if(changes.length) p.history=[...p.history,{date:now(),by:currentUser.name,text:changes.join(' | ')}];
+      Object.assign(p,newData,{label});
+    }
+  } else {
+    promises.push({id:uid(),label,...newData,created:now(),history:[]});
+  }
+  persist(); closeModal('promise-modal'); renderPromises();
+  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+}
+
+// ── THÈMES ────────────────────────────────────────────────────────────────────
+function renderThemes(){
+  document.getElementById('themes-list').innerHTML=themes.map(t=>`
+    <div class="theme-row">
+      <span class="theme-label">${t.name}</span>
+      <button class="btn btn-secondary btn-sm" onclick="openEditModal('theme','${t.id}')">✎</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteTheme('${t.id}')">Supprimer</button>
+    </div>`).join('');
+}
+function openThemeModal(){openEditModal('theme',null);}
+function deleteTheme(id){if(!confirm('Supprimer ce thème ?'))return;themes=themes.filter(t=>t.id!==id);persist();renderThemes();populateFilters();}
+
+// ── ADJOINTS ──────────────────────────────────────────────────────────────────
+function renderAdjoints(){
+  const grid=document.getElementById('adjoints-grid');
+  grid.innerHTML=adjoints.map(a=>{
+    const initials=a.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const avatar=a.photo
+      ? `<img src="${a.photo}" class="adjoint-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : '';
+    const placeholder=`<div class="adjoint-avatar-placeholder" ${a.photo?'style="display:none"':''}>${initials}</div>`;
+    const nb=promises.filter(p=>p.adjointId===a.id).length;
+    const done=promises.filter(p=>p.adjointId===a.id&&p.statusId==='s4').length;
+    return `<div class="adjoint-card">
+      ${avatar}${placeholder}
+      <div class="adjoint-info">
+        <div class="name">${a.name}</div>
+        <div class="role">${a.role}</div>
+        <div style="font-size:11px;color:var(--gray-500)">${nb} engagement${nb>1?'s':''} · ${done} réalisé${done>1?'s':''}</div>
+      </div>
+      <div class="adjoint-actions">
+        <button class="btn btn-secondary btn-sm" onclick="openEditModal('adjoint','${a.id}')">✎</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAdjoint('${a.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openAdjointModal(){openEditModal('adjoint',null);}
+function deleteAdjoint(id){if(!confirm('Supprimer cet adjoint ?'))return;adjoints=adjoints.filter(a=>a.id!==id);persist();renderAdjoints();populateFilters();}
+
+// ── STATUTS ───────────────────────────────────────────────────────────────────
+function renderStatuts(){
+  document.getElementById('statuts-list').innerHTML=statuses.map(s=>`
+    <div class="statut-row">
+      <div class="statut-dot" style="background:${s.color}"></div>
+      <span class="statut-label">${s.label}</span>
+      <button class="btn btn-secondary btn-sm" onclick="openEditModal('status','${s.id}')">✎</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteStatus('${s.id}')">Supprimer</button>
+    </div>`).join('');
+}
+function openStatusModal(){openEditModal('status',null);}
+function deleteStatus(id){if(!confirm('Supprimer ce statut ?'))return;statuses=statuses.filter(s=>s.id!==id);persist();renderStatuts();populateFilters();}
+
+// ── MODAL GÉNÉRIQUE ───────────────────────────────────────────────────────────
+let _editModalSave=null;
+function openEditModal(type,id){
+  let title,bodyHtml,saveFn;
+  if(type==='theme'){
+    const t=id?themes.find(x=>x.id===id):null;
+    title=t?'Modifier le thème':'Nouveau thème';
+    bodyHtml=`<div class="form-group"><label>Nom du thème</label><input type="text" id="em-name" value="${t?.name||''}"></div>`;
+    saveFn=()=>{
+      const name=document.getElementById('em-name').value.trim();
+      if(!name){alert('Nom requis.');return;}
+      if(id){const t=themes.find(x=>x.id===id);if(t)t.name=name;}
+      else themes.push({id:uid(),name});
+      persist();closeModal('edit-modal');renderThemes();populateFilters();
+    };
+  } else if(type==='status'){
+    const s=id?statuses.find(x=>x.id===id):null;
+    title=s?'Modifier le statut':'Nouveau statut';
+    bodyHtml=`<div class="form-group"><label>Libellé</label><input type="text" id="em-name" value="${s?.label||''}"></div>
+    <div class="form-group"><label>Couleur</label><div class="color-pair"><input type="color" id="em-color-pick" value="${s?.color||'#94a3b8'}" oninput="document.getElementById('em-color').value=this.value"><input type="text" id="em-color" value="${s?.color||'#94a3b8'}" oninput="document.getElementById('em-color-pick').value=this.value||'#94a3b8'"></div></div>`;
+    saveFn=()=>{
+      const label=document.getElementById('em-name').value.trim();
+      const color=document.getElementById('em-color').value.trim()||'#94a3b8';
+      if(!label){alert('Libellé requis.');return;}
+      if(id){const s=statuses.find(x=>x.id===id);if(s){s.label=label;s.color=color;}}
+      else statuses.push({id:uid(),label,color});
+      persist();closeModal('edit-modal');renderStatuts();populateFilters();
+    };
+  } else if(type==='adjoint'){
+    const a=id?adjoints.find(x=>x.id===id):null;
+    title=a?'Modifier l\'élu':'Nouvel adjoint / élu';
+    bodyHtml=`<div class="form-group"><label>Nom complet</label><input type="text" id="em-name" value="${a?.name||''}"></div>
+    <div class="form-group"><label>Délégation / rôle</label><input type="text" id="em-role" value="${a?.role||''}"></div>
+    <div class="form-group"><label>URL photo (optionnel)</label><input type="text" id="em-photo" value="${a?.photo||''}" placeholder="https://…"></div>`;
+    saveFn=()=>{
+      const name=document.getElementById('em-name').value.trim();
+      const role=document.getElementById('em-role').value.trim();
+      const photo=document.getElementById('em-photo').value.trim();
+      if(!name){alert('Nom requis.');return;}
+      if(id){const a=adjoints.find(x=>x.id===id);if(a){a.name=name;a.role=role;a.photo=photo;}}
+      else adjoints.push({id:uid(),name,role,photo});
+      persist();closeModal('edit-modal');renderAdjoints();populateFilters();
+    };
+  }
+  document.getElementById('edit-modal-title').textContent=title;
+  document.getElementById('edit-modal-body').innerHTML=bodyHtml;
+  _editModalSave=saveFn;
+  document.getElementById('edit-modal').classList.add('open');
+}
+function runEditModalSave(){if(_editModalSave)_editModalSave();}
+
+// ── ADMIN ─────────────────────────────────────────────────────────────────────
+function renderAdmin(){
+  // Config form
+  document.getElementById('config-form').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="form-group"><label>Titre de l'application</label><input type="text" id="cfg-title" value="${config.appTitle||''}"></div>
+      <div class="form-group"><label>Sous-titre</label><input type="text" id="cfg-subtitle" value="${config.appSubtitle||''}"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+      <div class="form-group"><label>Couleur principale</label><div class="color-pair"><input type="color" id="cfg-primary-pick" value="${config.primaryColor||'#2563eb'}" oninput="document.getElementById('cfg-primary').value=this.value"><input type="text" id="cfg-primary" value="${config.primaryColor||'#2563eb'}" oninput="document.getElementById('cfg-primary-pick').value=this.value||'#2563eb'"></div></div>
+      <div class="form-group"><label>Couleur sombre</label><div class="color-pair"><input type="color" id="cfg-dark-pick" value="${config.primaryDark||'#1e40af'}" oninput="document.getElementById('cfg-dark').value=this.value"><input type="text" id="cfg-dark" value="${config.primaryDark||'#1e40af'}" oninput="document.getElementById('cfg-dark-pick').value=this.value||'#1e40af'"></div></div>
+      <div class="form-group"><label>Couleur accent</label><div class="color-pair"><input type="color" id="cfg-accent-pick" value="${config.accentColor||'#059669'}" oninput="document.getElementById('cfg-accent').value=this.value"><input type="text" id="cfg-accent" value="${config.accentColor||'#059669'}" oninput="document.getElementById('cfg-accent-pick').value=this.value||'#059669'"></div></div>
+    </div>
+    <div class="form-group"><label>URL du logo</label><input type="text" id="cfg-logo" value="${config.logoUrl||''}" placeholder="https://ville.fr/logo.png — laisser vide pour aucun logo"></div>`;
+  // Users
+  document.getElementById('users-tbody').innerHTML=users.map(u=>`<tr>
+    <td><code style="font-size:12px">${u.login}</code></td>
+    <td style="font-weight:600">${u.name}</td>
+    <td><span class="badge" style="background:var(--gray-100);color:var(--gray-700)">${{admin:'Administrateur',adjoint:'Adjoint',lecteur:'Lecteur'}[u.role]||u.role}</span></td>
+    <td style="font-size:12px">${u.adjointId?getAdjoint(u.adjointId).name:'—'}</td>
+    <td><button class="btn btn-secondary btn-sm" onclick="openUserModal('${u.id}')" style="margin-right:4px">✎</button><button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">Supprimer</button></td>
+  </tr>`).join('');
+}
+
+function saveConfig(){
+  config.appTitle     =document.getElementById('cfg-title').value.trim()||'Suivi des engagements';
+  config.appSubtitle  =document.getElementById('cfg-subtitle').value.trim();
+  config.primaryColor =document.getElementById('cfg-primary').value.trim()||'#2563eb';
+  config.primaryDark  =document.getElementById('cfg-dark').value.trim()||'#1e40af';
+  config.accentColor  =document.getElementById('cfg-accent').value.trim()||'#059669';
+  config.logoUrl      =document.getElementById('cfg-logo').value.trim();
+  applyConfig();
+  persist();
+  alert('Configuration enregistrée.');
+}
+
+function openUserModal(editId){
+  populateFilters();
+  const editing=editId?users.find(u=>u.id===editId):null;
+  document.getElementById('u-id').value=editing?editing.id:'';
+  document.getElementById('u-login').value=editing?editing.login:'';
+  document.getElementById('u-name').value=editing?editing.name:'';
+  document.getElementById('u-pass').value='';
+  document.getElementById('u-pass').placeholder=editing?'Laisser vide pour conserver':'';
+  document.getElementById('u-pass-label').textContent=editing?'Nouveau mot de passe (optionnel)':'Mot de passe';
+  document.getElementById('u-role').value=editing?editing.role:'lecteur';
+  document.getElementById('u-adjoint').value=editing?editing.adjointId:'';
+  document.getElementById('user-modal-title').textContent=editing?'Modifier l\'utilisateur':'Nouvel utilisateur';
+  document.getElementById('user-modal').classList.add('open');
+}
+
+async function saveUser(){
+  const id=document.getElementById('u-id').value;
+  const login=document.getElementById('u-login').value.trim();
+  const name=document.getElementById('u-name').value.trim();
+  const passRaw=document.getElementById('u-pass').value;
+  const role=document.getElementById('u-role').value;
+  const adjointId=document.getElementById('u-adjoint').value;
+  if(!login||!name){alert('Identifiant et nom sont requis.');return;}
+  if(!id&&!passRaw){alert('Le mot de passe est requis pour un nouvel utilisateur.');return;}
+  if(users.find(u=>u.login===login&&u.id!==id)){alert('Identifiant déjà utilisé.');return;}
+  const passHash=passRaw?await hashPass(passRaw):null;
+  if(id){
+    const u=users.find(x=>x.id===id);
+    if(u){u.login=login;u.name=name;u.role=role;u.adjointId=adjointId;if(passHash)u.newPass=passHash;}
+  } else {
+    users.push({id:uid(),login,name,newPass:passHash,role,adjointId});
+  }
+  await persist();
+  // Nettoyer les champs temporaires
+  users.forEach(u=>{delete u.newPass;});
+  closeModal('user-modal'); renderAdmin();
+}
+
+function deleteUser(id){
+  if(id===currentUser.id){alert('Vous ne pouvez pas supprimer votre propre compte.');return;}
+  if(!confirm('Supprimer cet utilisateur ?'))return;
+  users=users.filter(u=>u.id!==id);
+  persist(); renderAdmin();
+}
+
+// ── VUE PUBLIQUE ──────────────────────────────────────────────────────────────
+function renderPublic(){
+  const q  =(document.getElementById('pub-search')?.value||'').toLowerCase();
+  const tid= document.getElementById('pub-theme')?.value;
+  const sid= document.getElementById('pub-status')?.value;
+  const hid= document.getElementById('pub-horizon')?.value;
+  let list=promises;
+  if(q)   list=list.filter(p=>p.label.toLowerCase().includes(q)||(p.publicComment||'').toLowerCase().includes(q));
+  if(tid) list=list.filter(p=>p.themeId===tid);
+  if(sid) list=list.filter(p=>p.statusId===sid);
+  if(hid) list=list.filter(p=>p.horizonId===hid);
+  const c=document.getElementById('public-list');
+  if(!list.length){c.innerHTML='<div class="empty-state"><div class="ico">🔍</div><p>Aucun engagement trouvé.</p></div>';return;}
+  c.innerHTML=list.map(p=>`<div class="public-card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="font-weight:600;line-height:1.4;margin-bottom:3px">${p.label}</div>
+        <div style="font-size:11px;color:var(--gray-500);font-weight:600">${getTheme(p.themeId).name}</div>
+        ${p.horizonId?`<div style="margin-top:4px">${horizonBadge(p.horizonId)}</div>`:''}
+        ${p.publicComment?`<div style="font-size:12.5px;color:var(--gray-700);margin-top:6px;padding-top:6px;border-top:1px solid var(--gray-100)">${p.publicComment}</div>`:''}
+      </div>
+      <div style="flex-shrink:0;margin-top:2px">${statusBadge(p.statusId)}</div>
+    </div>
+  </div>`).join('');
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function exportablePromises(){
+  if(currentUser.role==='adjoint') return promises.filter(p=>p.adjointId===currentUser.adjointId);
+  return promises;
+}
+function exportCSV(){
+  const list=exportablePromises();
+  const h=['N°','Libellé','Thème','Horizon','Adjoint','Statut','Commentaire public','Créé le','Mis à jour'];
+  const r=list.map((p,i)=>[i+1,`"${p.label.replace(/"/g,'""')}"`,getTheme(p.themeId).name,(getHorizon(p.horizonId)||{label:''}).label,getAdjoint(p.adjointId).name,getStatus(p.statusId).label,`"${(p.publicComment||'').replace(/"/g,'""')}"`,p.created,p.updated].join(';'));
+  const blob=new Blob(['﻿'+[h.join(';'),...r].join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='engagements.csv';a.click();
+}
+function exportPDF(){
+  const list=exportablePromises();
+  const adjLabel=currentUser.role==='adjoint'?' — '+getAdjoint(currentUser.adjointId).name:'';
+  const title=config.appTitle||'Suivi des engagements';
+  const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+<title>${title}</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#111;margin:30px}
+h1{font-size:20px;margin-bottom:4px}
+.sub{color:#666;font-size:12px;margin-bottom:20px}
+table{width:100%;border-collapse:collapse}
+th{background:#f1f5f9;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#64748b;border-bottom:2px solid #e2e8f0}
+td{padding:8px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top;font-size:11.5px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700}
+</style></head><body>
+<h1>${title}${adjLabel}</h1>
+<div class="sub">Exporté le ${new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</div>
+<table>
+<thead><tr><th>#</th><th>Engagement</th><th>Thème</th><th>Horizon</th><th>Adjoint</th><th>Statut</th></tr></thead>
+<tbody>${list.map((p,i)=>`<tr>
+  <td>${i+1}</td>
+  <td>${p.label}</td>
+  <td>${getTheme(p.themeId).name}</td>
+  <td>${(getHorizon(p.horizonId)||{label:'—'}).label}</td>
+  <td>${getAdjoint(p.adjointId).name}</td>
+  <td><span class="badge" style="background:${getStatus(p.statusId).color}22;color:${getStatus(p.statusId).color}">${getStatus(p.statusId).label}</span></td>
+</tr>`).join('')}
+</tbody></table>
+<div class="no-print" style="position:fixed;bottom:20px;right:20px">
+  <button onclick="window.print()" style="background:#1e40af;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">🖨️ Imprimer / PDF</button>
+</div>
+</body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function switchTab(tabId){
+  ['tab-info','tab-history'].forEach(t=>{
+    document.getElementById(t).classList.toggle('active',t===tabId);
+    document.getElementById(t+'-content').style.display=t===tabId?'block':'none';
+  });
+}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));});
+
+// ── BOOTSTRAP ─────────────────────────────────────────────────────────────────
+(async()=>{
+  if(DEMO_MODE){
+    const banner=document.getElementById('demo-banner');
+    banner.style.display='block';
+    // Décaler le loading overlay et le login sous le bandeau
+    document.getElementById('loading-overlay').style.top='38px';
+    document.getElementById('login-page').style.top='38px';
+    document.getElementById('sidebar').style.top='38px';
+    document.getElementById('topbar').style.top='38px';
+    document.getElementById('main').style.paddingTop='82px'; // 54px topbar + 28px
+  }
+  applyConfig();
+  const hasData=await loadFromServer();
+  if(!hasData){
+    await migratePasswords();
+    await initializeServer();
+  }
+  applyConfig();
+  document.getElementById('loading-overlay').style.display='none';
+  document.getElementById('login-page').classList.add('show');
+})();
+</script>
+</body>
+</html>
