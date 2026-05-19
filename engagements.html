@@ -3,200 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Suivi des engagements</title>
+<title>Union Pour Viroflay — Suivi des engagements</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --primary:       #2563eb;
-  --primary-light: #3b82f6;
-  --primary-dark:  #1e40af;
-  --accent:        #059669;
-  --accent-dark:   #047857;
-  --danger:        #dc2626;
-  --gray-50:  #f8fafc;
-  --gray-100: #f1f5f9;
-  --gray-200: #e2e8f0;
-  --gray-300: #cbd5e1;
-  --gray-500: #64748b;
-  --gray-700: #334155;
-  --gray-900: #0f172a;
+  --primary: #127a90;
+  --primary-light: #1a8ca3;
+  --primary-dark: #0d5f70;
+  --accent: #72b340;
+  --accent-dark: #5a9030;
+  --success: #72b340;
+  --warning: #e8a020;
+  --danger: #dc2626;
+  --gray-50: #f7fbfc;
+  --gray-100: #edf4f7;
+  --gray-200: #d6e8ed;
+  --gray-300: #b0cdd6;
+  --gray-500: #5a8a96;
+  --gray-700: #2d5a66;
+  --gray-900: #0f2d35;
   --sidebar-w: 250px;
   --radius: 8px;
-  --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+  --shadow: 0 1px 3px rgba(18,122,144,.1), 0 1px 2px rgba(18,122,144,.07);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; background: var(--gray-50); color: var(--gray-900); display: flex; min-height: 100vh; }
 
 /* SIDEBAR */
 #sidebar { width: var(--sidebar-w); background: var(--primary-dark); color: #fff; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
-#sidebar .logo { padding: 18px 16px 14px; border-bottom: 1px solid rgba(255,255,255,.15); display: flex; align-items: center; gap: 10px; }
-#sidebar .logo img { height: 38px; width: auto; }
-#sidebar .logo .app-title { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.3; }
-#sidebar .logo .app-subtitle { font-size: 10px; color: rgba(255,255,255,.6); font-weight: 500; }
+#sidebar .logo { padding: 18px 16px 14px; border-bottom: 1px solid rgba(255,255,255,.15); text-align: center; }
+#sidebar .logo img { height: 52px; width: auto; filter: brightness(0) invert(1); }
 #sidebar nav { flex: 1; padding: 10px 0; overflow-y: auto; }
 #sidebar nav a { display: flex; align-items: center; gap: 9px; padding: 9px 16px; color: rgba(255,255,255,.78); text-decoration: none; font-size: 13.5px; font-weight: 600; transition: background .15s; cursor: pointer; border: none; background: none; width: 100%; }
 #sidebar nav a:hover, #sidebar nav a.active { background: rgba(255,255,255,.13); color: #fff; }
 #sidebar nav a .ico { width: 18px; text-align: center; font-size: 14px; flex-shrink: 0; }
 #sidebar .role-badge { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.12); font-size: 12px; }
-#sidebar .role-badge strong { display: block; color: #6ee7b7; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-bottom: 2px; }
+#sidebar .role-badge strong { display: block; color: var(--accent); font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-bottom: 2px; }
 #sidebar .role-badge span { opacity: .8; font-size: 13px; }
 
 /* TOPBAR */
-#topbar { position: fixed; top: 0; left: var(--sidebar-w); right: 0; height: 54px; background: #fff; border-bottom: 2px solid var(--accent); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+#topbar { position: fixed; top: 0; left: var(--sidebar-w); right: 0; height: 54px; background: #fff; border-bottom: 2px solid var(--accent); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 50; box-shadow: 0 2px 8px rgba(18,122,144,.08); }
 #topbar h2 { font-size: 15px; font-weight: 700; color: var(--primary-dark); }
 #topbar .actions { display: flex; align-items: center; gap: 10px; }
 
 /* BUTTONS */
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); font-size: 13.5px; font-weight: 700; cursor: pointer; border: none; transition: all .15s; font-family: inherit; }
-.btn-primary { background: var(--primary); color: #fff; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: all .15s; font-family: inherit; }
+.btn-primary { background: var(--primary-light); color: #fff; }
 .btn-primary:hover { background: var(--primary-dark); }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: var(--accent-dark); }
 .btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); }
 .btn-secondary:hover { background: var(--gray-200); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
 .btn-danger { background: #fee2e2; color: var(--danger); }
 .btn-danger:hover { background: #fecaca; }
-.btn-sm { padding: 5px 11px; font-size: 12px; }
 
 /* MAIN */
-#main { margin-left: var(--sidebar-w); margin-top: 54px; flex: 1; padding: 28px 32px; max-width: 1200px; }
-.page { display: none; }
+#main { margin-left: var(--sidebar-w); padding-top: 54px; flex: 1; }
+.page { display: none; padding: 24px; }
 .page.active { display: block; }
 
 /* CARDS */
-.card { background: #fff; border-radius: 10px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 20px; }
-.card-body { padding: 20px 22px; }
-.card-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--gray-500); margin-bottom: 14px; }
+.card { background: #fff; border-radius: var(--radius); border: 1px solid var(--gray-200); box-shadow: var(--shadow); }
+.card-body { padding: 20px; }
+.card-title { font-size: 13.5px; font-weight: 700; color: var(--primary-dark); margin-bottom: 14px; text-transform: uppercase; letter-spacing: .04em; }
+
+/* STATS */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.stat-card { background: #fff; border-radius: var(--radius); border-left: 4px solid var(--primary-light); padding: 14px 16px; box-shadow: var(--shadow); }
+.stat-card .val { font-size: 30px; font-weight: 800; color: var(--primary-dark); line-height: 1; }
+.stat-card .lbl { font-size: 11.5px; color: var(--gray-500); margin-top: 4px; font-weight: 600; }
+.stat-card .sub { font-size: 11px; color: var(--gray-500); margin-top: 4px; }
+
+/* PROGRESS */
+.progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width .6s; }
+
+/* BADGE */
+.badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
 
 /* TABLE */
 .tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--gray-500); border-bottom: 2px solid var(--gray-200); background: var(--gray-50); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead tr { background: var(--gray-50); }
+th { padding: 9px 12px; text-align: left; font-weight: 700; color: var(--gray-500); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 2px solid var(--gray-200); white-space: nowrap; }
 td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
-tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--gray-50); }
-
-/* BADGE */
-.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; gap: 4px; background: var(--gray-100); color: var(--gray-700); }
+tr:last-child td { border-bottom: none; }
 
 /* FORM */
 .form-group { margin-bottom: 14px; }
-.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--gray-700); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .04em; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius); font-size: 13.5px; font-family: inherit; background: #fff; color: var(--gray-900); transition: border-color .15s; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
-.form-group textarea { resize: vertical; min-height: 80px; }
+label { display: block; font-size: 12px; font-weight: 700; color: var(--gray-700); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+input[type=text], input[type=password], select, textarea { width: 100%; padding: 8px 11px; border: 1.5px solid var(--gray-300); border-radius: 6px; font-size: 13.5px; color: var(--gray-900); background: #fff; outline: none; transition: border .15s; font-family: inherit; }
+input:focus, select:focus, textarea:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(26,140,163,.12); }
+textarea { resize: vertical; min-height: 80px; }
 
-/* FILTERS */
-.filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; align-items: center; }
-.filters input, .filters select { padding: 7px 12px; border: 1.5px solid var(--gray-200); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; }
-.filters input { min-width: 220px; }
-.filters select { min-width: 160px; }
-.filters input:focus, .filters select:focus { outline: none; border-color: var(--primary); }
-
-/* DASHBOARD */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
-.stat-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); border-left: 4px solid var(--primary); }
-.stat-card .val { font-size: 28px; font-weight: 800; color: var(--primary-dark); line-height: 1; margin-bottom: 4px; }
-.stat-card .lbl { font-size: 12px; font-weight: 600; color: var(--gray-500); }
-.stat-card .sub { font-size: 11px; color: var(--gray-500); margin-top: 3px; }
-.progress-bar-wrap { background: #fff; border-radius: 10px; padding: 16px 20px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 20px; }
-.progress-bar-outer { height: 12px; background: var(--gray-100); border-radius: 999px; margin: 8px 0; overflow: hidden; }
-.progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; transition: width .6s; }
-.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.chart-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); }
-.chart-card h4 { font-size: 11px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
-.chart-wrap { height: 200px; position: relative; }
-@media (max-width: 700px) { .charts-row { grid-template-columns: 1fr; } }
-
-/* OVERLAYS / MODALS */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+/* MODAL */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(13,95,112,.4); z-index: 200; align-items: center; justify-content: center; }
 .overlay.open { display: flex; }
-.modal { background: #fff; border-radius: 12px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.2); display: flex; flex-direction: column; max-height: 90vh; }
-.modal-header { padding: 18px 22px 14px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-.modal-header h3 { font-size: 16px; font-weight: 800; }
-.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--gray-500); line-height: 1; padding: 0 4px; }
-.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
-.modal-footer { padding: 14px 22px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+.modal { background: #fff; border-radius: 10px; width: 90%; max-width: 680px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(13,95,112,.25); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 2px solid var(--accent); background: var(--primary-dark); border-radius: 10px 10px 0 0; }
+.modal-header h3 { font-size: 15px; font-weight: 700; color: #fff; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: rgba(255,255,255,.7); line-height: 1; }
+.modal-close:hover { color: #fff; }
+.modal-body { padding: 22px; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 10px; background: var(--gray-50); border-radius: 0 0 10px 10px; }
 
 /* TABS */
-.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-200); margin-bottom: 16px; }
-.tab { padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; background: none; color: var(--gray-500); font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--gray-200); margin-bottom: 18px; }
+.tab { padding: 8px 16px; font-size: 13px; cursor: pointer; border: none; background: none; color: var(--gray-500); border-bottom: 2px solid transparent; margin-bottom: -2px; font-weight: 700; font-family: inherit; }
+.tab.active { color: var(--primary-light); border-bottom-color: var(--primary-light); }
 
 /* HISTORY */
-.history-list { display: flex; flex-direction: column; gap: 8px; }
-.history-item { font-size: 12.5px; padding: 8px 12px; background: var(--gray-50); border-radius: 6px; border-left: 3px solid var(--gray-300); }
-.history-item .hi-date { font-size: 11px; color: var(--gray-500); margin-bottom: 2px; }
+.history-item { display: flex; gap: 10px; margin-bottom: 12px; }
+.history-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 4px; flex-shrink: 0; }
+.history-meta { font-size: 11px; color: var(--gray-500); }
 
-/* ADJOINTS */
-.adjoints-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-.adjoint-card { background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); display: flex; align-items: center; gap: 14px; }
-.adjoint-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: var(--gray-200); flex-shrink: 0; }
-.adjoint-avatar-placeholder { width: 52px; height: 52px; border-radius: 50%; background: var(--primary-dark); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
-.adjoint-info { flex: 1; min-width: 0; }
-.adjoint-info .name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
-.adjoint-info .role { font-size: 11.5px; color: var(--gray-500); margin-bottom: 4px; }
-.adjoint-actions { display: flex; gap: 6px; flex-shrink: 0; }
+/* FILTERS */
+.filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.filters select { max-width: 220px; }
+.filters input { flex: 1; min-width: 200px; max-width: 300px; }
 
-/* STATUTS */
-.statuts-list { display: flex; flex-direction: column; gap: 8px; }
-.statut-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--gray-50); border-radius: 8px; border: 1px solid var(--gray-200); }
-.statut-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-.statut-label { flex: 1; font-weight: 600; font-size: 14px; }
-
-/* THEMES */
-.themes-list { display: flex; flex-direction: column; gap: 8px; }
-.theme-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--gray-50); border-radius: 8px; border: 1px solid var(--gray-200); }
-.theme-label { flex: 1; font-weight: 600; font-size: 14px; }
-
-/* PUBLIC */
-.public-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); margin-bottom: 10px; }
-#pub-header { background: var(--primary-dark); color: #fff; padding: 32px 24px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
-#pub-header h1 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
-#pub-header p { opacity: .8; font-size: 14px; }
+/* CHARTS */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+.chart-container { position: relative; height: 250px; }
 
 /* LOGIN */
 #login-page { display: none; position: fixed; inset: 0; background: var(--primary-dark); align-items: center; justify-content: center; z-index: 300; }
 #login-page.show { display: flex; }
-.login-box { background: #fff; border-radius: 14px; padding: 36px 32px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
-.login-logo { text-align: center; margin-bottom: 10px; }
-.login-logo img { height: 56px; width: auto; }
-.login-box h2 { font-size: 20px; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; text-align: center; }
-.login-box p { font-size: 13px; color: var(--gray-500); text-align: center; margin-bottom: 22px; }
+.login-box { background: #fff; border-radius: 12px; padding: 36px; width: 360px; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+.login-logo { text-align: center; margin-bottom: 24px; }
+.login-logo img { height: 60px; }
+.login-box h2 { font-size: 17px; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px; }
+.login-box p { font-size: 13px; color: var(--gray-500); margin-bottom: 22px; }
 
-/* EMPTY */
-.empty-state { text-align: center; padding: 48px 24px; color: var(--gray-500); }
-.empty-state .ico { font-size: 40px; margin-bottom: 12px; }
+/* PUBLIC */
+.public-card { padding: 16px 20px; }
+.public-card + .public-card { border-top: 1px solid var(--gray-100); }
 
-/* PRINT */
-@media print { #sidebar, #topbar, .btn, .filters, .modal, .overlay { display: none !important; } #main { margin: 0; padding: 0; } .page { display: block !important; } }
-.no-print { }
-@media print { .no-print { display: none !important; } }
-
-/* CONFIG COLOR PICKER */
-.color-pair { display: flex; gap: 8px; align-items: center; }
-.color-pair input[type=color] { width: 40px; height: 36px; padding: 2px; border: 1.5px solid var(--gray-300); border-radius: 6px; cursor: pointer; }
-.color-pair input[type=text] { flex: 1; }
+/* MISC */
+.row { display: flex; gap: 14px; }
+.row > * { flex: 1; }
+.alert-info { background: #ecf8fa; color: var(--primary-dark); border: 1px solid var(--gray-200); padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; }
+.empty-state { text-align: center; padding: 40px; color: var(--gray-500); }
+.empty-state .ico { font-size: 36px; margin-bottom: 8px; }
+.sub-theme-tag { font-size: 11px; color: var(--primary-light); font-weight: 600; }
+@media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .stats-grid { grid-template-columns: 1fr 1fr; } #sidebar { display: none; } #main { margin-left: 0; } #topbar { left: 0; } }
 </style>
 </head>
 <body>
 
-<!-- BANDEAU DÉMO (affiché uniquement en ?demo=1) -->
-<div id="demo-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:#f59e0b;color:#78350f;text-align:center;padding:7px 16px;font-size:12.5px;font-weight:700;font-family:'Nunito',sans-serif;letter-spacing:.02em">
-  ⚡ MODE DÉMO — agence <strong>2017</strong> · Les données sont sauvegardées localement dans ce navigateur · <a href="mailto:bertrand@2017.fr" style="color:#78350f;text-decoration:underline">Demander une démo personnalisée</a>
-</div>
-
 <!-- LOADING OVERLAY -->
 <div id="loading-overlay" style="position:fixed;inset:0;background:var(--primary-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:400;gap:16px">
-  <div id="loading-logo-wrap"></div>
+  <img src="logo-upv26.png" alt="Union Pour Viroflay" style="height:60px;filter:brightness(0) invert(1)" onerror="this.style.display='none'">
   <div style="color:rgba(255,255,255,.75);font-size:13px;font-weight:600;font-family:'Nunito',sans-serif">Chargement des données…</div>
 </div>
 
 <!-- LOGIN -->
 <div id="login-page">
   <div class="login-box">
-    <div class="login-logo" id="login-logo-wrap"></div>
-    <h2 id="login-title">Espace de pilotage</h2>
-    <p id="login-subtitle">Suivi des engagements municipaux</p>
+    <div class="login-logo"><img src="logo-upv26.png" alt="Union Pour Viroflay" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:20px;font-weight:800;color:var(--primary-dark)">Union Pour <span style="color:var(--accent)">Viroflay</span></span></div>
+    <h2>Espace de pilotage</h2>
+    <p>Suivi des engagements municipaux 2026–2032</p>
     <div class="form-group"><label>Identifiant</label><input type="text" id="login-user" autocomplete="username"></div>
     <div class="form-group"><label>Mot de passe</label><input type="password" id="login-pass" autocomplete="current-password"></div>
     <div id="login-error" style="display:none;padding:8px 12px;background:#fee2e2;color:var(--danger);border-radius:6px;font-size:13px;margin-bottom:8px;font-weight:600"></div>
@@ -208,26 +178,22 @@ tr:hover td { background: var(--gray-50); }
 <!-- SIDEBAR -->
 <aside id="sidebar">
   <div class="logo">
-    <div id="sidebar-logo-wrap"></div>
-    <div>
-      <div class="app-title" id="sidebar-title">Suivi des engagements</div>
-      <div class="app-subtitle" id="sidebar-subtitle">Mandat municipal</div>
-    </div>
+    <img src="logo-upv26.png" alt="Union Pour Viroflay" onerror="this.outerHTML='<div style=\'color:#fff;font-weight:800;font-size:14px;padding:4px 0\'>Union Pour Viroflay</div>'">
   </div>
   <nav>
-    <a onclick="showPage('dashboard')" id="nav-dashboard"><span class="ico">📊</span> Tableau de bord</a>
-    <a onclick="showPage('promises')"  id="nav-promises"><span class="ico">📋</span> Nos engagements</a>
-    <a onclick="showPage('public')"    id="nav-public"><span class="ico">🌐</span> Vue publique</a>
-    <a onclick="showPage('themes')"    id="nav-themes"   class="admin-only"><span class="ico">🏷</span> Thèmes</a>
-    <a onclick="showPage('adjoints')"  id="nav-adjoints" class="admin-only"><span class="ico">👥</span> Adjoints & élus</a>
-    <a onclick="showPage('statuts')"   id="nav-statuts"  class="admin-only"><span class="ico">⚙️</span> Statuts</a>
+    <a onclick="showPage('dashboard')" id="nav-dashboard" class="active"><span class="ico">📊</span> Tableau de bord</a>
+    <a onclick="showPage('promises')"  id="nav-promises"><span class="ico">📋</span> Engagements</a>
+    <a onclick="showPage('themes')"    id="nav-themes"><span class="ico">🏷️</span> Thèmes</a>
+    <a onclick="showPage('adjoints')"  id="nav-adjoints"><span class="ico">👥</span> Adjoints</a>
+    <a onclick="showPage('statuts')"   id="nav-statuts" class="admin-only"><span class="ico">⚙️</span> Statuts</a>
     <a onclick="showPage('export')"    id="nav-export"><span class="ico">📤</span> Export</a>
-    <a onclick="showPage('admin')"     id="nav-admin"    class="admin-only"><span class="ico">🔐</span> Administration</a>
+    <a onclick="showPage('public')"    id="nav-public"><span class="ico">🌐</span> Vue publique</a>
+    <a onclick="showPage('admin')"     id="nav-admin" class="admin-only"><span class="ico">🔐</span> Administration</a>
   </nav>
   <div class="role-badge">
-    <strong id="role-label">—</strong>
-    <span id="user-label">—</span>
-    <button onclick="doLogout()" style="margin-top:8px;background:rgba(255,255,255,.15);border:none;color:#fff;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;width:100%">Déconnexion</button>
+    <strong id="role-label">Rôle</strong>
+    <span id="user-label">—</span><br>
+    <a href="#" onclick="doLogout()" style="color:rgba(255,255,255,.5);font-size:11px;font-weight:600;text-decoration:none;margin-top:6px;display:inline-block">Déconnexion</a>
   </div>
 </aside>
 
@@ -236,7 +202,7 @@ tr:hover td { background: var(--gray-50); }
   <h2 id="page-title">Tableau de bord</h2>
   <div class="actions">
     <span id="topbar-date" style="font-size:12px;color:var(--gray-500);font-weight:600"></span>
-    <button class="btn btn-primary btn-sm" id="btn-add-promise" style="display:none" onclick="openPromiseModal()">+ Ajouter</button>
+    <button class="btn btn-accent" id="btn-add-promise" onclick="openPromiseModal()" style="display:none">+ Ajouter</button>
   </div>
 </div>
 
@@ -244,108 +210,149 @@ tr:hover td { background: var(--gray-50); }
 <div id="main">
 
 <!-- DASHBOARD -->
-<div class="page" id="page-dashboard">
-  <div id="stats-grid" class="stats-grid"></div>
-  <div class="progress-bar-wrap">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-      <span id="progress-label" style="font-size:13px;font-weight:600;color:var(--gray-700)">—</span>
-      <span id="progress-pct" style="font-size:14px;font-weight:800;color:var(--primary)">0%</span>
+<div class="page active" id="page-dashboard">
+  <div class="stats-grid" id="stats-grid"></div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-body">
+      <div class="card-title">Progression globale du programme</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="flex:1">
+          <div class="progress-bar" style="height:12px"><div class="progress-fill" id="global-progress" style="background:var(--accent);width:0%"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--gray-500);font-weight:600">
+            <span id="progress-label">—</span><span id="progress-pct" style="color:var(--primary-dark)">0%</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="progress-bar-outer"><div class="progress-bar-inner" id="global-progress" style="width:0%"></div></div>
   </div>
-  <div class="charts-row">
-    <div class="chart-card"><h4>Répartition par statut</h4><div class="chart-wrap"><canvas id="chart-status"></canvas></div></div>
-    <div class="chart-card"><h4>Avancement par thème</h4><div class="chart-wrap"><canvas id="chart-theme"></canvas></div></div>
-    <div class="chart-card"><h4>Engagements par adjoint</h4><div class="chart-wrap"><canvas id="chart-adjoint"></canvas></div></div>
-    <div class="chart-card"><h4>Engagements par horizon</h4><div class="chart-wrap"><canvas id="chart-timeline"></canvas></div></div>
+  <div class="charts-grid">
+    <div class="card"><div class="card-body"><div class="card-title">Répartition par statut</div><div class="chart-container"><canvas id="chart-status"></canvas></div></div></div>
+    <div class="card"><div class="card-body"><div class="card-title">Avancement par thème</div><div class="chart-container"><canvas id="chart-theme"></canvas></div></div></div>
+    <div class="card"><div class="card-body"><div class="card-title">Engagements par adjoint</div><div class="chart-container"><canvas id="chart-adjoint"></canvas></div></div></div>
+    <div class="card"><div class="card-body"><div class="card-title">Engagements par horizon</div><div class="chart-container"><canvas id="chart-timeline"></canvas></div></div></div>
   </div>
 </div>
 
 <!-- ENGAGEMENTS -->
 <div class="page" id="page-promises">
   <div class="filters">
-    <input type="text" id="filter-search" placeholder="🔍 Rechercher…" oninput="renderPromises()">
+    <input type="text" id="filter-search" placeholder="🔍 Rechercher un engagement...">
     <select id="filter-theme"   onchange="renderPromises()"><option value="">Tous les thèmes</option></select>
     <select id="filter-status"  onchange="renderPromises()"><option value="">Tous les statuts</option></select>
-    <select id="filter-horizon" onchange="renderPromises()"><option value="">Tous les horizons</option></select>
-    <select id="filter-adjoint" onchange="renderPromises()" class="admin-only"><option value="">Tous les adjoints</option></select>
+    <select id="filter-adjoint" onchange="renderPromises()"><option value="">Tous les adjoints</option></select>
+    <select id="filter-horizon" onchange="renderPromises()"><option value="">Tous horizons</option></select>
   </div>
-  <div class="tbl-wrap"><table>
-    <thead><tr>
-      <th style="width:44%">Engagement</th>
-      <th>Thème</th>
-      <th>Horizon</th>
-      <th>Adjoint</th>
-      <th>Statut</th>
-      <th></th>
-    </tr></thead>
-    <tbody id="promises-tbody"></tbody>
-  </table></div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Engagement</th><th>Thème</th><th>Adjoint</th><th>Statut</th><th>Maj</th><th></th></tr></thead>
+        <tbody id="promises-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div id="promises-count" style="margin-top:8px;font-size:12px;color:var(--gray-500);font-weight:600"></div>
 </div>
 
 <!-- THEMES -->
 <div class="page" id="page-themes">
-  <div class="card" style="max-width:520px"><div class="card-body">
-    <div class="card-title">Thèmes</div>
-    <div class="themes-list" id="themes-list"></div>
-    <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="openThemeModal()">+ Ajouter un thème</button>
-  </div></div>
+  <div style="display:flex;gap:18px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px">
+      <div class="card"><div class="card-body">
+        <div class="card-title">Thèmes du programme</div>
+        <div id="themes-list"></div>
+        <div class="form-group" style="margin-top:16px" id="add-theme-form">
+          <label>Nouveau thème</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="new-theme-name" placeholder="Intitulé du thème">
+            <button class="btn btn-primary btn-sm" onclick="addTheme()">Ajouter</button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <div style="flex:2;min-width:300px">
+      <div class="card"><div class="card-body">
+        <div class="card-title">Avancement par thème</div>
+        <div id="themes-stats"></div>
+      </div></div>
+    </div>
+  </div>
 </div>
 
 <!-- ADJOINTS -->
 <div class="page" id="page-adjoints">
-  <div class="adjoints-grid" id="adjoints-grid"></div>
-  <button class="btn btn-primary btn-sm" style="margin-top:4px" onclick="openAdjointModal()">+ Ajouter un adjoint</button>
+  <div style="display:flex;gap:18px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px">
+      <div class="card"><div class="card-body">
+        <div class="card-title">Élus responsables</div>
+        <div id="adjoints-list"></div>
+        <div class="form-group" style="margin-top:16px" id="add-adjoint-form">
+          <label>Nouvel élu / adjoint</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input type="text" id="new-adj-name" placeholder="Nom" style="flex:1;min-width:110px">
+            <input type="text" id="new-adj-role" placeholder="Délégation" style="flex:1;min-width:110px">
+            <button class="btn btn-primary btn-sm" onclick="addAdjoint()">Ajouter</button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <div style="flex:2;min-width:300px">
+      <div class="card"><div class="card-body">
+        <div class="card-title">Charge par élu</div>
+        <div id="adjoints-stats"></div>
+      </div></div>
+    </div>
+  </div>
 </div>
 
 <!-- STATUTS -->
 <div class="page" id="page-statuts">
-  <div class="card" style="max-width:480px"><div class="card-body">
+  <div class="card" style="max-width:580px"><div class="card-body">
     <div class="card-title">Statuts d'avancement</div>
-    <div class="statuts-list" id="statuts-list"></div>
-    <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="openStatusModal()">+ Ajouter un statut</button>
+    <div id="statuts-list"></div>
+    <div class="form-group" style="margin-top:16px">
+      <label>Nouveau statut</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="text" id="new-status-name" placeholder="Libellé" style="flex:1">
+        <input type="color" id="new-status-color" value="#127a90" style="width:44px;padding:3px;height:36px;border:1.5px solid var(--gray-300);border-radius:6px;cursor:pointer">
+        <button class="btn btn-primary btn-sm" onclick="addStatus()">Ajouter</button>
+      </div>
+    </div>
   </div></div>
 </div>
 
 <!-- EXPORT -->
 <div class="page" id="page-export">
-  <div class="card" style="max-width:500px"><div class="card-body">
+  <div class="card" style="max-width:460px"><div class="card-body">
     <div class="card-title">Export des données</div>
-    <p style="font-size:13.5px;color:var(--gray-700);margin-bottom:16px">Exportez la liste des engagements avec leur statut courant.</p>
-    <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <button class="btn btn-primary" onclick="exportCSV()">⬇ Exporter CSV</button>
-      <button class="btn btn-secondary" onclick="exportPDF()">🖨️ Vue impression / PDF</button>
+    <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;font-weight:600">Export des engagements dont vous êtes responsable. Les adjoints n'exportent que leurs propres engagements.</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="btn btn-secondary" onclick="exportCSV()">📄 Exporter en CSV (Excel / Calc)</button>
+      <button class="btn btn-secondary" onclick="exportPDF()">🖨️ Générer un PDF imprimable</button>
     </div>
   </div></div>
 </div>
 
-<!-- PUBLIC -->
+<!-- VUE PUBLIQUE -->
 <div class="page" id="page-public">
-  <div id="pub-header">
-    <h1 id="pub-title">Nos engagements</h1>
-  </div>
   <div class="filters">
-    <input type="text" id="pub-search" placeholder="🔍 Rechercher…" oninput="renderPublic()">
+    <input type="text" id="pub-search" placeholder="🔍 Rechercher..." oninput="renderPublic()">
     <select id="pub-theme"   onchange="renderPublic()"><option value="">Tous les thèmes</option></select>
     <select id="pub-status"  onchange="renderPublic()"><option value="">Tous les statuts</option></select>
-    <select id="pub-horizon" onchange="renderPublic()"><option value="">Tous les horizons</option></select>
+    <select id="pub-horizon" onchange="renderPublic()"><option value="">Tous horizons</option></select>
   </div>
-  <div id="public-list"></div>
+  <div class="card" id="public-list"></div>
 </div>
 
 <!-- ADMIN -->
 <div class="page" id="page-admin">
-  <div class="card" style="max-width:700px;margin-bottom:20px"><div class="card-body">
-    <div class="card-title">Personnalisation</div>
-    <div id="config-form"></div>
-    <button class="btn btn-primary btn-sm" style="margin-top:4px" onclick="saveConfig()">Enregistrer la configuration</button>
-  </div></div>
-  <div class="card" style="max-width:700px"><div class="card-body">
+  <div class="card" style="max-width:680px"><div class="card-body">
     <div class="card-title">Utilisateurs</div>
-    <div class="tbl-wrap"><table>
-      <thead><tr><th>Identifiant</th><th>Nom</th><th>Rôle</th><th>Adjoint lié</th><th></th></tr></thead>
-      <tbody id="users-tbody"></tbody>
-    </table></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Identifiant</th><th>Nom</th><th>Rôle</th><th>Adjoint lié</th><th></th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
     <button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="openUserModal()">+ Ajouter un utilisateur</button>
   </div></div>
 </div>
@@ -360,37 +367,29 @@ tr:hover td { background: var(--gray-50); }
       <button class="modal-close" onclick="closeModal('promise-modal')">×</button>
     </div>
     <div class="modal-body">
+      <input type="hidden" id="edit-id">
       <div class="tabs">
-        <button class="tab active" id="tab-info"    onclick="switchTab('tab-info')">Informations</button>
-        <button class="tab"        id="tab-history" onclick="switchTab('tab-history')">Historique</button>
+        <button class="tab active" onclick="switchTab('tab-info')">Informations</button>
+        <button class="tab" onclick="switchTab('tab-history')">Historique</button>
       </div>
-      <div id="tab-info-content">
-        <input type="hidden" id="edit-id">
-        <div class="form-group"><label>Libellé</label><textarea id="edit-label" rows="3"></textarea></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div id="tab-info">
+        <div class="form-group"><label>Libellé de l'engagement *</label><textarea id="edit-label" rows="3"></textarea></div>
+        <div class="row">
           <div class="form-group"><label>Thème</label><select id="edit-theme"></select></div>
+        </div>
+        <div class="row">
           <div class="form-group"><label>Adjoint responsable</label><select id="edit-adjoint"></select></div>
+          <div class="form-group"><label>Statut d'avancement</label><select id="edit-status"></select></div>
+          <div class="form-group"><label>Horizon de mise en œuvre</label><select id="edit-horizon"><option value="">— Non planifié —</option></select></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <div class="form-group"><label>Statut</label><select id="edit-status"></select></div>
-          <div class="form-group"><label>Horizon de mise en œuvre</label>
-            <select id="edit-horizon">
-              <option value="">— Non planifié —</option>
-              <option value="h1">Court terme — 2026-2027</option>
-              <option value="h2">Moyen terme — 2028-2029</option>
-              <option value="h3">Long terme — 2030-2032</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group"><label>Note interne</label><textarea id="edit-note" rows="2" placeholder="Visible uniquement par les élus connectés"></textarea></div>
-        <div class="form-group"><label>Commentaire public</label><textarea id="edit-public-comment" rows="2" placeholder="Visible par tous sur la vue publique"></textarea></div>
+        <div class="form-group"><label>Note interne (confidentielle)</label><textarea id="edit-note" placeholder="Notes de suivi, obstacles, ressources nécessaires…"></textarea></div>
+        <div class="form-group"><label>Commentaire public</label><textarea id="edit-public-comment" placeholder="Visible par les citoyens…"></textarea></div>
       </div>
-      <div id="tab-history-content" style="display:none">
-        <div class="history-list" id="history-list"></div>
-      </div>
+      <div id="tab-history" style="display:none"><div id="history-list"></div></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('promise-modal')">Annuler</button>
+      <button class="btn btn-danger btn-sm" id="btn-delete" onclick="deleteCurrentPromise()" style="display:none">Supprimer</button>
       <button class="btn btn-primary" id="btn-save" onclick="savePromise()">Enregistrer</button>
     </div>
   </div>
@@ -399,19 +398,13 @@ tr:hover td { background: var(--gray-50); }
 <!-- MODAL USER -->
 <div class="overlay" id="user-modal">
   <div class="modal" style="max-width:420px">
-    <div class="modal-header"><h3 id="user-modal-title">Utilisateur</h3><button class="modal-close" onclick="closeModal('user-modal')">×</button></div>
+    <div class="modal-header"><h3>Utilisateur</h3><button class="modal-close" onclick="closeModal('user-modal')">×</button></div>
     <div class="modal-body">
       <input type="hidden" id="u-id">
       <div class="form-group"><label>Identifiant</label><input type="text" id="u-login"></div>
       <div class="form-group"><label>Nom complet</label><input type="text" id="u-name"></div>
       <div class="form-group"><label id="u-pass-label">Mot de passe</label><input type="password" id="u-pass" placeholder=""></div>
-      <div class="form-group"><label>Rôle</label>
-        <select id="u-role">
-          <option value="admin">Administrateur</option>
-          <option value="adjoint">Adjoint / Élu</option>
-          <option value="lecteur">Lecteur</option>
-        </select>
-      </div>
+      <div class="form-group"><label>Rôle</label><select id="u-role"><option value="admin">Administrateur</option><option value="adjoint">Adjoint / Élu</option><option value="lecteur">Lecteur</option></select></div>
       <div class="form-group"><label>Adjoint lié</label><select id="u-adjoint"><option value="">— Aucun —</option></select></div>
     </div>
     <div class="modal-footer">
@@ -421,7 +414,6 @@ tr:hover td { background: var(--gray-50); }
   </div>
 </div>
 
-<!-- MODAL GÉNÉRIQUE (thèmes, statuts, adjoints) -->
 <div class="overlay" id="edit-modal">
   <div class="modal" style="max-width:460px">
     <div class="modal-header"><h3 id="edit-modal-title">Modifier</h3><button class="modal-close" onclick="closeModal('edit-modal')">×</button></div>
@@ -434,89 +426,204 @@ tr:hover td { background: var(--gray-50); }
 </div>
 
 <script>
-// ── CONSTANTES ────────────────────────────────────────────────────────────────
-const API_URL   = 'api.php';
-const DEMO_MODE = new URLSearchParams(window.location.search).has('demo');
-const DEMO_KEY  = 'demo2017_data';
+// ── DATA ─────────────────────────────────────────────────────────────────────
 
-const HORIZONS = [
-  {id:'h1', label:'Court terme — 2026-2027', color:'#2563eb'},
-  {id:'h2', label:'Moyen terme — 2028-2029', color:'#059669'},
-  {id:'h3', label:'Long terme — 2030-2032',  color:'#d97706'},
-];
-
-// ── DONNÉES PAR DÉFAUT ────────────────────────────────────────────────────────
 const DEFAULT_STATUSES = [
-  {id:'s1', label:'En attente',              color:'#94a3b8'},
-  {id:'s2', label:'À l\'étude',              color:'#38bdf8'},
-  {id:'s3', label:'En cours',                color:'#f59e0b'},
-  {id:'s4', label:'Réalisé',                 color:'#22c55e'},
-  {id:'s5', label:'Partiellement réalisé',   color:'#a3e635'},
-  {id:'s6', label:'Abandonné',               color:'#f87171'},
+  {id:'s1',label:'En attente',               color:'#94a3b8'},
+  {id:'s2',label:'À l\'étude',               color:'#38bdf8'},
+  {id:'s3',label:'En cours',                 color:'#f59e0b'},
+  {id:'s4',label:'Mis en œuvre',             color:'#72b340'},
+  {id:'s5',label:'Mis en œuvre partiellement',color:'#a3e635'},
+  {id:'s6',label:'Abandonnée',               color:'#ef4444'},
+  {id:'s7',label:'Action additionnelle',     color:'#8b5cf6'},
 ];
 
 const DEFAULT_THEMES = [
-  {id:'t1', name:'Cadre de vie & environnement'},
-  {id:'t2', name:'Services à la population'},
-  {id:'t3', name:'Développement & attractivité'},
+  {id:'t1', name:'Préserver l\'environnement exceptionnel de Viroflay'},
+  {id:'t2', name:'Bien vivre ensemble au quotidien'},
+  {id:'t3', name:'Grandir et s\'épanouir à Viroflay'},
+  {id:'t4', name:'Veiller sur chacun et sur soi-même'},
+  {id:'t5', name:'Vous écouter, décider avec vous'},
+  {id:'t6', name:'Mener une politique budgétaire responsable'},
 ];
 
+const HORIZONS = [
+  {id:'h1', label:'Court terme — 2026-2027', color:'#127a90'},
+  {id:'h2', label:'Moyen terme — 2028-2029', color:'#72b340'},
+  {id:'h3', label:'Long terme — 2030-2032',  color:'#f59e0b'},
+];
+
+
+const BASE = 'https://www.ville-viroflay.fr/wp-content/uploads/2026/03/';
 const DEFAULT_ADJOINTS = [
-  {id:'a0', name:'Maire',              role:'Maire de la commune',                photo:''},
-  {id:'a1', name:'1er Adjoint',        role:'À personnaliser',                    photo:''},
-  {id:'a2', name:'2e Adjointe',        role:'À personnaliser',                    photo:''},
+  {id:'a0',  name:'Non attribué',             role:'—', photo:''},
+  {id:'a1',  name:'Bertrand Schneider',        role:'1er adj. — Communication & citoyenneté',           photo:BASE+'01-BERTRAND-SCHNEIDER-1-398x600.webp'},
+  {id:'a2',  name:'Gwénola Teston',            role:'Adjointe — Jeunesse, vie scolaire & handicap',      photo:BASE+'02-GWENOLA-TESTON-1-398x600.webp'},
+  {id:'a3',  name:'Jean-Philippe Olier',       role:'Adjoint — Aménagement de l\'espace public & mobilités', photo:BASE+'03-JEAN-PHILIPPE-OLIER-1-1-398x600.webp'},
+  {id:'a4',  name:'Laure Cottin',              role:'Adjointe — Petite enfance, couples & familles',     photo:BASE+'Laure-cottin-1-398x600.webp'},
+  {id:'a5',  name:'Louis Le Pivain',           role:'Adjoint — Sécurité, bâtiments & accessibilité',    photo:BASE+'05-LOUIS-LE-PIVAIN-1-398x600.webp'},
+  {id:'a6',  name:'Jane-Marie Hermann',        role:'Adjointe — Culture & jumelage',                     photo:BASE+'06-JANE-MARIE-HERMANN-398x600.webp'},
+  {id:'a7',  name:'Arnaud Brosset',            role:'Adjoint — Commerce & vie économique',               photo:BASE+'07-ARNAUD-BROSSET-398x600.webp'},
+  {id:'a8',  name:'Christelle Favre-Lorraine', role:'Adjointe — Solidarités, autonomie & santé',         photo:BASE+'08-CHRISTELLE-FAVRE-LORRAINE-398x600.webp'},
+  {id:'a9',  name:'Antoine Brelier-Murry',     role:'Adjoint — Urbanisme',                               photo:BASE+'09-ANTOINE-BRELIER-MURRY-1-398x600.webp'},
+  {id:'a10', name:'Christine Caron',           role:'Déléguée — Écologie du quotidien',                  photo:BASE+'14-CHRISTINE-CARON-398x600.webp'},
+  {id:'a11', name:'Valérie Le Dastumer',       role:'Déléguée — Vie associative & événementiel',         photo:BASE+'12-VALERIE-LE-DASTUMER-1-398x600.webp'},
+  {id:'a12', name:'Paola Pilichiewicz',        role:'Déléguée — Vie sportive',                           photo:BASE+'15-PAOLA-PILICHIEWICZ-1-398x600.webp'},
+  {id:'a13', name:'Livier Vennin',             role:'Délégué — Finances',                                photo:BASE+'11-LIVIER-VENNIN-398x600.webp'},
 ];
 
+// Comptes de démarrage (premier déploiement uniquement).
+// Une fois initialisés sur le serveur, ces identifiants n'ont plus aucun rôle.
+// Changer les mots de passe dès la première connexion via Administration → Utilisateurs.
 const DEFAULT_USERS = [
   {id:'u1', login:'admin',   name:'Administrateur', pass:'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', role:'admin',   adjointId:''},
-  {id:'u2', login:'adjoint', name:'Élu démo',        pass:'c5a74a5181a87db48dba08ddcf759aacdc70ed58af6aa3c8db65015cf8ca3377', role:'adjoint', adjointId:'a1'},
-  {id:'u3', login:'lecteur', name:'Lecteur démo',     pass:'fee0570210d7777b41453bb788382e5626588e43489b9be7a15a0bfe990eaefe', role:'lecteur', adjointId:''},
+  {id:'u2', login:'adjoint', name:'Élu test',       pass:'c5a74a5181a87db48dba08ddcf759aacdc70ed58af6aa3c8db65015cf8ca3377', role:'adjoint', adjointId:'a1'},
+  {id:'u3', login:'lecteur', name:'Lecteur test',   pass:'fee0570210d7777b41453bb788382e5626588e43489b9be7a15a0bfe990eaefe', role:'lecteur', adjointId:''},
 ];
-// Mots de passe par défaut : admin/admin123 · adjoint/adjoint123 · lecteur/lecteur123
 
-const D = '2026-01-01';
+const D = '2026-03-28';
 const SAMPLE_PROMISES = [
-  {id:'p1', label:'Rénover les équipements sportifs du quartier nord et mettre aux normes d\'accessibilité les vestiaires', themeId:'t1', adjointId:'a1', statusId:'s2', horizonId:'h1', note:'', publicComment:'', created:D, updated:D, history:[]},
-  {id:'p2', label:'Planter 200 arbres supplémentaires sur les axes principaux et dans les espaces verts existants', themeId:'t1', adjointId:'a2', statusId:'s1', horizonId:'h2', note:'', publicComment:'', created:D, updated:D, history:[]},
-  {id:'p3', label:'Étendre les horaires d\'ouverture de la bibliothèque municipale en soirée et le dimanche matin', themeId:'t2', adjointId:'a1', statusId:'s3', horizonId:'h1', note:'', publicComment:'Ouverture le mardi et jeudi jusqu\'à 19h dès septembre.', created:D, updated:D, history:[]},
-  {id:'p4', label:'Mettre en place un service de portage de repas à domicile pour les seniors isolés', themeId:'t2', adjointId:'a2', statusId:'s1', horizonId:'h2', note:'', publicComment:'', created:D, updated:D, history:[]},
-  {id:'p5', label:'Créer une pépinière d\'entreprises pour accueillir et accompagner les porteurs de projets locaux', themeId:'t3', adjointId:'a0', statusId:'s2', horizonId:'h3', note:'', publicComment:'', created:D, updated:D, history:[]},
+  // t1 / st1 — Forêts
+  {id:'p1', label:'Compléter les aires de jeux dans chaque parc forestier pour que les familles puissent y passer plus de temps', themeId:'t1',subThemeId:'st1',adjointId:'a3',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p2', label:'Ouvrir la maison forestière rénovée pour y organiser des ateliers nature et cuisine à partir de produits cultivés sur place', themeId:'t1',subThemeId:'st1',adjointId:'a3',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p3', label:'Intensifier les occasions de se retrouver au Jardin de la Piste : guinguettes, événements festifs, ateliers pédagogiques, boutique ponctuelle de produits locaux', themeId:'t1',subThemeId:'st1',adjointId:'a3',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t1 / st2 — Canicules
+  {id:'p4', label:'Livrer la nouvelle cour de l\'école Corot et étendre progressivement cette transformation aux autres écoles', themeId:'t1',subThemeId:'st2',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p5', label:'Aménager au moins une salle climatisée par école pour que les enfants puissent se rafraîchir les jours de canicule', themeId:'t1',subThemeId:'st2',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p6', label:'Poursuivre la végétalisation partout où c\'est possible : parkings, placettes, pieds d\'immeubles, relancer le permis de végétaliser les pieds de clôture', themeId:'t1',subThemeId:'st2',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p7', label:'Recréer un alignement végétal le long de l\'avenue de Versailles par la plantation de plus de 80 arbres dans le cadre de la reconfiguration du secteur de la Place de la Fête', themeId:'t1',subThemeId:'st2',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p8', label:'Réaménager le square Delaunay pour le rattacher au nouveau bâtiment de la Forge et assurer une continuité cyclable sous les Arcades', themeId:'t1',subThemeId:'st2',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t1 / st3 — Énergie
+  {id:'p9', label:'Déployer le réseau de géothermie : permettre aux copropriétés équipées de chauffage central de se raccorder à une énergie renouvelable produite localement (premiers travaux en 2027)', themeId:'t1',subThemeId:'st3',adjointId:'a10',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p10',label:'Travailler avec l\'Architecte des Bâtiments de France pour définir des règles claires permettant aux propriétaires d\'installer des panneaux solaires sur leur toit', themeId:'t1',subThemeId:'st3',adjointId:'a10',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p11',label:'Veiller à ce que l\'implantation de pompes à chaleur n\'engendre pas de nuisances sonores pour le voisinage', themeId:'t1',subThemeId:'st3',adjointId:'a10',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t1 / st4 — Construire autrement
+  {id:'p12',label:'Continuer à exiger des matériaux biosourcés dans tous les projets où la ville est maître d\'ouvrage', themeId:'t1',subThemeId:'st4',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p13',label:'Privilégier la réhabilitation à la démolition chaque fois que c\'est techniquement et économiquement viable', themeId:'t1',subThemeId:'st4',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p14',label:'Encourager le réemploi de matériaux de démolition pour favoriser la sobriété des nouvelles constructions', themeId:'t1',subThemeId:'st4',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t1 / st5 — Biodiversité
+  {id:'p15',label:'Proposer des solutions concrètes pour lutter contre les espèces nuisibles (laurier du Caucase, frelons asiatiques, chenilles processionnaires) : pièges, campagnes d\'information, coordination ONF', themeId:'t1',subThemeId:'st5',adjointId:'a10',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p16',label:'Étudier avec Versailles Grand Parc toutes les possibilités de réduire encore nos déchets ultimes pour accentuer le tri à la source et réduire les coûts de collecte et de traitement', themeId:'t1',subThemeId:'st5',adjointId:'a10',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t1 / st6 — Vélo/pied
+  {id:'p17',label:'Créer des stationnements vélos sécurisés près des gares, en commençant par la rue Maze (48 places) à proximité de la gare rive gauche', themeId:'t1',subThemeId:'st6',adjointId:'a3',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p18',label:'Réaménager le quartier de la Place de la Fête pour ralentir les voitures en transit et aménager des pistes cyclables protégées de la circulation', themeId:'t1',subThemeId:'st6',adjointId:'a3',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p19',label:'Renforcer les itinéraires cyclables existants et créer de nouvelles pistes là où c\'est encore possible', themeId:'t1',subThemeId:'st6',adjointId:'a3',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p20',label:'Élaborer un code de la rue pour que piétons, cyclistes et automobilistes partagent l\'espace public dans un respect mutuel', themeId:'t1',subThemeId:'st6',adjointId:'a3',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p21',label:'Consulter les seniors pour améliorer les cheminements piétons et installer des bancs aux endroits stratégiques', themeId:'t1',subThemeId:'st6',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t2 / st7 — Commerces
+  {id:'p22',label:'Travailler le réaménagement du secteur Corby/Leclerc (place Louis XIV) pour une meilleure visibilité des commerces et y installer un distributeur de billets sans agence bancaire', themeId:'t2',subThemeId:'st7',adjointId:'a7',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p23',label:'Encourager les initiatives des commerçants via leurs associations et inventer un programme de fidélité incitant à consommer à Viroflay', themeId:'t2',subThemeId:'st7',adjointId:'a7',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p24',label:'Définir le type de commerces qui s\'implanteront dans les nouvelles constructions du centre-ville et rechercher les porteurs de projets', themeId:'t2',subThemeId:'st7',adjointId:'a7',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p25',label:'Implanter une supérette au pied de l\'immeuble en construction devant la gare rive droite pour faciliter la vie des Viroflaysiens', themeId:'t2',subThemeId:'st7',adjointId:'a7',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p26',label:'Profiter de l\'intérieur de la halle Leclerc pour en faire un lieu plus lumineux, plus homogène et plus qualitatif', themeId:'t2',subThemeId:'st7',adjointId:'a7',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p27',label:'Profiter des espaces publics réaménagés pour organiser des afterwork conviviaux et travailler avec les restaurateurs pour pouvoir dîner après un spectacle à l\'auditorium', themeId:'t2',subThemeId:'st7',adjointId:'a7',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t2 / st8 — Logements
+  {id:'p28',label:'Développer l\'offre de logements en Bail Réel Solidaire (BRS) et réserver chaque première phase de commercialisation aux familles viroflaysiennes', themeId:'t2',subThemeId:'st8',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p29',label:'Poursuivre la rénovation des îlots vétustes, notamment sur l\'avenue du Général Leclerc, pour remplacer les immeubles mal isolés', themeId:'t2',subThemeId:'st8',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p30',label:'Créer des logements locatifs à loyer intermédiaire pour les jeunes actifs qui veulent prendre leur autonomie ou les familles qui ne peuvent pas encore acheter', themeId:'t2',subThemeId:'st8',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p31',label:'Adapter les règles d\'urbanisme pour que les nouveaux appartements soient traversants, disposent d\'un balcon ou d\'une terrasse et prévoient un espace pour le télétravail', themeId:'t2',subThemeId:'st8',adjointId:'a9',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t2 / st9 — Événements
+  {id:'p32',label:'Reconduire le bal en l\'intégrant au programme des Offlénies qui se transformeront en une véritable fête familiale ponctuée par un grand banquet', themeId:'t2',subThemeId:'st9',adjointId:'a11',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p33',label:'Réorienter la grande brocante des Offlénies en un vide-grenier dont la priorité sera redonnée aux Viroflaysiens', themeId:'t2',subThemeId:'st9',adjointId:'a11',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p34',label:'Soutenir les événements à l\'initiative des quartiers et de leurs associations (fête du Haras, déjeuners de quartier, fêtes des voisins, vide-greniers…)', themeId:'t2',subThemeId:'st9',adjointId:'a11',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t2 / st10 — Culture
+  {id:'p35',label:'Rénover la salle Dunoyer de Segonzac pour la rendre accessible aux personnes à mobilité réduite et améliorer ses performances énergétiques et acoustiques', themeId:'t2',subThemeId:'st10',adjointId:'a6',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p36',label:'Continuer à proposer la salle aux associations pour expositions, braderies ou spectacles, avec des loges plus confortables pour les artistes', themeId:'t2',subThemeId:'st10',adjointId:'a6',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p37',label:'Rechercher des spectacles pour tous les publics avec une ouverture encore plus grande aux scolaires', themeId:'t2',subThemeId:'st10',adjointId:'a6',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p38',label:'Intensifier la médiation culturelle en étroite collaboration avec les artistes exposants', themeId:'t2',subThemeId:'st10',adjointId:'a6',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t2 / st11 — Associations
+  {id:'p39',label:'Poursuivre l\'animation des associations et la mise en réseau des copropriétés qui regroupent de nombreux bénévoles', themeId:'t2',subThemeId:'st11',adjointId:'a11',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p40',label:'Aider la ressourcerie à trouver de nouveaux locaux lorsque son bail précaire de Porchefontaine arrivera à échéance', themeId:'t2',subThemeId:'st11',adjointId:'a11',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p41',label:'Continuer à proposer des subventions aux associations d\'intérêt général répondant à un besoin des Viroflaysiens', themeId:'t2',subThemeId:'st11',adjointId:'a13',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p42',label:'Proposer de nouvelles formations aux responsables associatifs pour faciliter leur engagement', themeId:'t2',subThemeId:'st11',adjointId:'a11',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p43',label:'Renforcer le partenariat entre les services municipaux et les associations pour multiplier les animations tout au long de l\'année', themeId:'t2',subThemeId:'st11',adjointId:'a11',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t3 / st12 — Petite enfance
+  {id:'p44',label:'Maintenir un bon niveau de recrutement dans les crèches avec des personnels diplômés et formés', themeId:'t3',subThemeId:'st12',adjointId:'a4',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p45',label:'Ouvrir le Cocon des familles tout l\'été avec une programmation estivale dédiée et étendre l\'accueil des assistants maternels et auxiliaires parentaux à cinq jours par semaine', themeId:'t3',subThemeId:'st12',adjointId:'a4',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p46',label:'Renforcer la formation continue des équipes, particulièrement sur le bien-être de l\'enfant et le dialogue avec les parents', themeId:'t3',subThemeId:'st12',adjointId:'a4',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p47',label:'Travailler sur le lien parental et les bonnes pratiques en matière éducative, notamment concernant l\'usage des écrans', themeId:'t3',subThemeId:'st12',adjointId:'a4',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p48',label:'Élaborer un guide «Petite enfance et Famille» recensant l\'ensemble des services municipaux et partenariaux', themeId:'t3',subThemeId:'st12',adjointId:'a4',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t3 / st13 — Écoles
+  {id:'p49',label:'Achever la rénovation énergétique des derniers bâtiments scolaires', themeId:'t3',subThemeId:'st13',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p50',label:'Généraliser les «10 jours sans écran» dans toutes les écoles, y compris maternelles et dans les crèches, pour sensibiliser les parents aux risques de l\'abus d\'écran', themeId:'t3',subThemeId:'st13',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p51',label:'Maintenir le permis internet pour donner les clés de cette technologie à nos enfants et les aider à déceler les risques', themeId:'t3',subThemeId:'st13',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p52',label:'Créer des mini-conseils d\'enfants du périscolaire pour encourager l\'expression, l\'écoute et la citoyenneté dès le plus jeune âge', themeId:'t3',subThemeId:'st13',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p53',label:'En 2026, 9 classes de plus bénéficieront de subventions pour des classes d\'environnement', themeId:'t3',subThemeId:'st13',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p54',label:'Intensifier la lutte contre le gaspillage alimentaire dans les cantines par des actions de sensibilisation des enfants', themeId:'t3',subThemeId:'st13',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p55',label:'Augmenter la part de produits bio et locaux et proposer des menus plus variés, savoureux, avec des goûters faits maison', themeId:'t3',subThemeId:'st13',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p56',label:'Dans les crèches, développer un véritable projet d\'éducation alimentaire en sensibilisant les parents aux enjeux d\'une alimentation équilibrée', themeId:'t3',subThemeId:'st13',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t3 / st14 — Collégiens/lycéens
+  {id:'p57',label:'Travailler avec le collège pour créer une «classe Défense» en lien avec la Base Aérienne de Villacoublay', themeId:'t3',subThemeId:'st14',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p58',label:'Ouvrir la MJV aux lycéens avec des créneaux dédiés, propices à l\'échange et au partage', themeId:'t3',subThemeId:'st14',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p59',label:'Poursuivre les formations au BAFA pour proposer aux jeunes de devenir animateurs durant leurs études supérieures', themeId:'t3',subThemeId:'st14',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t3 / st15 — Seniors
+  {id:'p60',label:'Profiter de l\'inauguration du nouveau bâtiment de la Forge pour affiner le projet de service du pôle senior et proposer de nouvelles activités', themeId:'t3',subThemeId:'st15',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p61',label:'Développer les activités intergénérationnelles en lien avec les crèches, le Cocon des Familles, la MJV ou les accueils de loisirs', themeId:'t3',subThemeId:'st15',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p62',label:'Accentuer l\'identification de personnes âgées isolées pour leur proposer de l\'aide ponctuelle ou récurrente, notamment durant les périodes de canicule', themeId:'t3',subThemeId:'st15',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p63',label:'Multiplier les moments festifs et les sorties, sources de lien et de découvertes', themeId:'t3',subThemeId:'st15',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p64',label:'Valoriser l\'action des bénévoles, indispensables au fonctionnement des activités de la Forge', themeId:'t3',subThemeId:'st15',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t3 / st16 — Handicap
+  {id:'p65',label:'Terminer la réfection des rues dans lesquelles la circulation sur les trottoirs est problématique (racines d\'arbres, largeur insuffisante)', themeId:'t3',subThemeId:'st16',adjointId:'a5',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p66',label:'Fusionner le Service de Soins Infirmiers à Domicile avec le Service d\'Aide à Domicile pour une meilleure coordination dans la prise en charge des personnes dépendantes', themeId:'t3',subThemeId:'st16',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p67',label:'Organiser davantage de moments de rencontre entre les jeunes de la MJV et les centres d\'accueil de jour, autour de pratiques sportives adaptées', themeId:'t3',subThemeId:'st16',adjointId:'a12',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p68',label:'Reconduire la semaine du handicap, moment de sensibilisation à la richesse de la différence entre personnes valides et celles qui le sont moins', themeId:'t3',subThemeId:'st16',adjointId:'a2',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t3 / st17 — Couples
+  {id:'p69',label:'Informer les Viroflaysiens sur les différentes formes d\'union (union libre, PACS, mariage civil) et leurs conséquences juridiques, patrimoniales et familiales', themeId:'t3',subThemeId:'st17',adjointId:'a4',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p70',label:'Articuler ces actions avec le parcours «Devenir parent», destiné aux futurs parents', themeId:'t3',subThemeId:'st17',adjointId:'a4',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t4 / st18 — Sécurité
+  {id:'p71',label:'Procurer de nouveaux moyens matériels à la police municipale pour assurer la sécurité et faciliter le recrutement de nouveaux policiers', themeId:'t4',subThemeId:'st18',adjointId:'a5',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p72',label:'Intensifier les contrôles liés au respect du code de la route (feux rouges, automobilistes, cyclistes)', themeId:'t4',subThemeId:'st18',adjointId:'a5',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p73',label:'Acquérir un radar jumelles pour effectuer des contrôles de vitesse, particulièrement sur l\'avenue du Général Leclerc', themeId:'t4',subThemeId:'st18',adjointId:'a5',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p74',label:'Étendre le réseau de vidéoprotection sur les secteurs sensibles pour lutter contre les trafics ou la consommation de substances toxiques (protoxyde d\'azote)', themeId:'t4',subThemeId:'st18',adjointId:'a5',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p75',label:'Rechercher des moyens concrets de lutte contre les incivilités du quotidien tels que les dépôts sauvages', themeId:'t4',subThemeId:'st18',adjointId:'a5',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p76',label:'Créer une Réserve Citoyenne Communale sous deux formes : une réserve de sécurité civile et une réserve solidaire', themeId:'t4',subThemeId:'st18',adjointId:'a5',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t4 / st19 — Sport
+  {id:'p77',label:'Étudier la faisabilité technique et financière de gradins au bord du stade pour le confort des accompagnants et du public', themeId:'t4',subThemeId:'st19',adjointId:'a12',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p78',label:'Refaire le revêtement de la Piste, utilisé par les collégiens pour l\'entraînement à la course et par les plus petits pour l\'apprentissage du vélo', themeId:'t4',subThemeId:'st19',adjointId:'a12',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p79',label:'Accompagner les initiatives de développement du sport en pérennisant l\'aide logistique aux deux grandes manifestations : QBRC (septembre) et cross de la Sablière (février)', themeId:'t4',subThemeId:'st19',adjointId:'a12',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p80',label:'Profiter des équipements sportifs à la pointe pour favoriser l\'intégration de sportifs en situation de handicap (tennis de table, tir à l\'arc…)', themeId:'t4',subThemeId:'st19',adjointId:'a12',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t4 / st20 — Santé
+  {id:'p81',label:'Ouvrir un nouveau cabinet médical dans le quartier de la Place de la Fête avec 3 médecins et 2 infirmières libérales, pour que chaque quartier bénéficie d\'un cabinet médical de ville', themeId:'t4',subThemeId:'st20',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p82',label:'Mettre les professionnels de santé en réseau pour partager leur expérience et anticiper les futurs besoins des habitants', themeId:'t4',subThemeId:'st20',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p83',label:'Organiser de nouvelles actions de prévention (délégation Ligue contre le Cancer, semaine sans tabac, don d\'organes)', themeId:'t4',subThemeId:'st20',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p84',label:'Promouvoir les formations aux premiers secours de la Croix-Rouge ou de la Maison des sapeurs-pompiers des Yvelines', themeId:'t4',subThemeId:'st20',adjointId:'a8',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t5 / st21 — Élus présents
+  {id:'p85',label:'Maintenir et renforcer les rendez-vous de proximité : permanences au marché, dans les quartiers, accès direct aux élus', themeId:'t5',subThemeId:'st21',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p86',label:'Garantir que les élus soient joignables par email et répondent personnellement aux sollicitations de leurs voisins', themeId:'t5',subThemeId:'st21',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p87',label:'Faciliter le signalement d\'un problème (nid de poule, candélabre défaillant…) via un accès rapide par le site ou une application spécifique', themeId:'t5',subThemeId:'st21',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p88',label:'Veiller à ce que chaque demande reçoive une réponse dans un délai raisonnable', themeId:'t5',subThemeId:'st21',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t5 / st22 — Consultation
+  {id:'p89',label:'Consulter systématiquement les habitants avant chaque décision qui engage l\'avenir de la ville (aménagement de quartier, nouvel équipement, évolution d\'un service municipal)', themeId:'t5',subThemeId:'st22',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p90',label:'Rendre compte des résultats de chaque consultation et expliquer comment les avis ont été pris en compte dans la décision finale', themeId:'t5',subThemeId:'st22',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p91',label:'Constituer une commission extra-municipale (panel citoyen permanent) de Viroflaysiens volontaires pour donner son avis régulièrement sur les sujets présents ou futurs de la ville', themeId:'t5',subThemeId:'st22',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t5 / st23 — Information
+  {id:'p92',label:'Installer des panneaux d\'information systématiques sur chaque chantier municipal pour expliquer les travaux, leur durée et le bénéfice concret', themeId:'t5',subThemeId:'st23',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p93',label:'Organiser une journée portes ouvertes annuelle de la mairie pour faire découvrir le travail quotidien des agents', themeId:'t5',subThemeId:'st23',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p94',label:'Renforcer le service d\'écrivain public pour accompagner gratuitement dans les démarches administratives complexes (dossiers CAF, déclarations fiscales, demandes de subventions)', themeId:'t5',subThemeId:'st23',adjointId:'a1',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  // t6 / st24 — Finances
+  {id:'p95',label:'Continuer à mener une politique budgétaire prudente qui soit respectueuse des taxes locales que paient les propriétaires', themeId:'t6',subThemeId:'st24',adjointId:'a13',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p96',label:'Renoncer, comme cela a toujours été fait, aux frais de représentation parfois reprochés aux élus locaux', themeId:'t6',subThemeId:'st24',adjointId:'a13',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p97',label:'Essayer de trouver de nouveaux financements pour compenser la perte des grandes subventions du Département et de la Région', themeId:'t6',subThemeId:'st24',adjointId:'a13',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p98',label:'Engager une politique de désendettement pour redonner à la ville des marges de manœuvre financière à moyen terme', themeId:'t6',subThemeId:'st24',adjointId:'a13',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
+  {id:'p99',label:'Trouver des moyens de mutualiser d\'autres services ou compétences avec Versailles Grand Parc pour réduire le coût global pour la collectivité', themeId:'t6',subThemeId:'st24',adjointId:'a13',statusId:'s1',note:'',publicComment:'',created:D,updated:D,history:[]},
 ];
-
-const DEFAULT_CONFIG = {
-  appTitle:     'Suivi des engagements',
-  appSubtitle:  'Mandat municipal',
-  primaryColor: '#2563eb',
-  primaryDark:  '#1e40af',
-  accentColor:  '#059669',
-  logoUrl:      '',
-};
 
 // ── STORE ─────────────────────────────────────────────────────────────────────
+const API_URL = 'api.php';
+
 let statuses    = DEFAULT_STATUSES;
 let themes      = DEFAULT_THEMES;
 let adjoints    = DEFAULT_ADJOINTS;
 let promises    = SAMPLE_PROMISES;
-let users       = DEFAULT_USERS.map(u=>({...u})); // copie sans référence
-let config      = {...DEFAULT_CONFIG};
+let users       = DEFAULT_USERS;
 let currentUser = null;
 
 async function persist(){
-  if(!currentUser || currentUser.id==='pub') return;
-  if(DEMO_MODE){
-    localStorage.setItem(DEMO_KEY, JSON.stringify({statuses,themes,adjoints,promises,users,config}));
-    return;
-  }
+  if(!currentUser||currentUser.id==='pub') return;
   try{
-    await fetch(API_URL,{
-      method:'POST',
-      credentials:'include',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'save',statuses,themes,adjoints,promises,users,config})
-    });
+    await fetch(API_URL+'?action=save',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({statuses,themes,adjoints,promises,users})});
   }catch(e){console.error('Sauvegarde échouée',e);}
 }
-
 function applyServerData(d){
   if(!d||typeof d!=='object') return false;
   const hasData=!!(d.users?.length||d.promises?.length);
@@ -525,15 +632,9 @@ function applyServerData(d){
   if(d.adjoints?.length) adjoints=d.adjoints;
   if(d.promises?.length) promises=d.promises;
   if(d.users?.length)    users=d.users;
-  if(d.config)           config={...DEFAULT_CONFIG,...d.config};
   return hasData;
 }
-
 async function loadFromServer(){
-  if(DEMO_MODE){
-    try{const raw=localStorage.getItem(DEMO_KEY);if(raw)return applyServerData(JSON.parse(raw));}catch(e){}
-    return false;
-  }
   try{
     const r=await fetch(API_URL+'?action=load&t='+Date.now(),{credentials:'include'});
     if(!r.ok) return false;
@@ -543,20 +644,16 @@ async function loadFromServer(){
     return false;
   }
 }
-
 async function initializeServer(){
   await migratePasswords();
-  if(DEMO_MODE){
-    localStorage.setItem(DEMO_KEY, JSON.stringify({statuses,themes,adjoints,promises,users,config}));
-    return;
-  }
   try{
-    await fetch(API_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'initdata',statuses,themes,adjoints,promises,users,config})
-    });
+    await fetch(API_URL+'?action=initdata',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({statuses,themes,adjoints,promises,users})});
   }catch(e){console.error('Initialisation échouée',e);}
+}
+function migrateUsers(){
+  let changed=false;
+  DEFAULT_USERS.forEach(du=>{if(!users.find(u=>u.id===du.id)){users.push(du);changed=true;}});
+  return changed;
 }
 
 // ── CRYPTO ────────────────────────────────────────────────────────────────────
@@ -566,53 +663,28 @@ async function hashPass(str){
 }
 async function migratePasswords(){
   const hexRe=/^[0-9a-f]{64}$/i;
+  let changed=false;
   for(const u of users){
-    if(u.pass && !hexRe.test(u.pass)) u.pass=await hashPass(u.pass);
+    if(!hexRe.test(u.pass)){u.pass=await hashPass(u.pass);changed=true;}
   }
+  return changed;
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 async function doLogin(){
   const login=document.getElementById('login-user').value.trim();
   const h=await hashPass(document.getElementById('login-pass').value);
-  if(DEMO_MODE){
-    const u=users.find(x=>x.login===login&&x.pass===h);
-    if(!u){
-      const e=document.getElementById('login-error');
-      e.style.display='block'; e.textContent='Identifiants incorrects.'; return;
-    }
-    const safe={...u}; delete safe.pass;
-    currentUser=safe;
-    document.getElementById('login-page').classList.remove('show');
-    initApp(); return;
-  }
   try{
-    const r=await fetch(API_URL,{
-      method:'POST', credentials:'include',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'login',login,pass:h})
-    });
+    const r=await fetch(API_URL+'?action=login',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({login,pass:h})});
     const data=await r.json();
-    if(!r.ok){
-      const e=document.getElementById('login-error');
-      e.style.display='block';
-      e.textContent=data.error||'Identifiants incorrects.'; return;
-    }
+    if(!r.ok){const e=document.getElementById('login-error');e.style.display='block';e.textContent=data.error||'Identifiants incorrects.';return;}
     currentUser=data.user;
-    document.getElementById('login-page').classList.remove('show');
-    initApp();
-  }catch(e){
-    const err=document.getElementById('login-error');
-    err.style.display='block';
-    err.textContent='Erreur de connexion au serveur.';
-  }
+    document.getElementById('login-page').classList.remove('show'); initApp();
+  }catch(e){const err=document.getElementById('login-error');err.style.display='block';err.textContent='Erreur de connexion au serveur.';}
 }
 function doLogout(){
-  if(!DEMO_MODE) fetch(API_URL,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:'{"action":"logout"}'}).catch(()=>{});
-  currentUser=null;
-  document.getElementById('login-page').classList.add('show');
-  document.getElementById('login-user').value='';
-  document.getElementById('login-pass').value='';
+  fetch(API_URL+'?action=logout',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
+  currentUser=null;document.getElementById('login-page').classList.add('show');document.getElementById('login-user').value='';document.getElementById('login-pass').value='';
 }
 document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
@@ -620,36 +692,9 @@ function showPublic(){
   currentUser={role:'public',name:'Visiteur',id:'pub'};
   document.getElementById('login-page').classList.remove('show');
   document.getElementById('sidebar').style.display='none';
-  document.getElementById('topbar').style.display='none';
+  document.getElementById('topbar').style.left='0';
   document.getElementById('main').style.marginLeft='0';
-  document.getElementById('main').style.marginTop='0';
   populateFilters(); showPage('public');
-}
-
-// ── BRANDING ─────────────────────────────────────────────────────────────────
-function applyConfig(){
-  const c=config;
-  document.title=c.appTitle||'Suivi des engagements';
-  document.getElementById('sidebar-title').textContent=c.appTitle||'Suivi des engagements';
-  document.getElementById('sidebar-subtitle').textContent=c.appSubtitle||'Mandat municipal';
-  document.getElementById('login-title').textContent=c.appTitle||'Espace de pilotage';
-  document.getElementById('login-subtitle').textContent=c.appSubtitle||'Suivi des engagements municipaux';
-  document.getElementById('pub-title').textContent=c.appTitle||'Nos engagements';
-  // CSS variables
-  const r=document.documentElement.style;
-  if(c.primaryColor) r.setProperty('--primary',c.primaryColor);
-  if(c.primaryDark)  r.setProperty('--primary-dark',c.primaryDark);
-  if(c.accentColor)  r.setProperty('--accent',c.accentColor);
-  // Logo
-  ['loading-logo-wrap','login-logo-wrap','sidebar-logo-wrap'].forEach(id=>{
-    const el=document.getElementById(id); if(!el) return;
-    if(c.logoUrl){
-      const sz=id==='sidebar-logo-wrap'?'38px':'56px';
-      el.innerHTML=`<img src="${c.logoUrl}" style="height:${sz};width:auto;max-width:160px" onerror="this.style.display='none'">`;
-    } else {
-      el.innerHTML='';
-    }
-  });
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -682,42 +727,41 @@ function showPage(id){
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
-function getStatus(id)  {return statuses.find(s=>s.id===id)||{label:'—',color:'#94a3b8'};}
-function getTheme(id)   {return themes.find(t=>t.id===id)||{name:'—'};}
-function getAdjoint(id) {return adjoints.find(a=>a.id===id)||{name:'—',role:''};}
-function getHorizon(id) {return HORIZONS.find(h=>h.id===id)||null;}
-function uid()          {return 'x'+Math.random().toString(36).slice(2)+Date.now().toString(36);}
-function now()          {return new Date().toISOString().slice(0,10);}
-
-function statusBadge(sid){
-  const s=getStatus(sid);
-  return `<span class="badge" style="background:${s.color}20;color:${s.color};border:1px solid ${s.color}44">${s.label}</span>`;
-}
-function horizonBadge(hid){
-  if(!hid) return '';
-  const h=getHorizon(hid); if(!h) return '';
-  return `<span class="badge" style="background:${h.color}18;color:${h.color};border:1px solid ${h.color}44;font-size:10px">${h.label}</span>`;
-}
+function getStatus(id)   {return statuses.find(s=>s.id===id)||{label:'—',color:'#94a3b8'};}
+function getTheme(id)    {return themes.find(t=>t.id===id)||{name:'—'};}
+function getAdjoint(id)  {return adjoints.find(a=>a.id===id)||{name:'—',role:''};}
+function uid()           {return 'x'+Math.random().toString(36).slice(2,9);}
+function today()         {return new Date().toLocaleDateString('fr-FR');}
+function statusBadge(sid){const s=getStatus(sid);return `<span class="badge" style="background:${s.color}25;color:${s.color};border:1px solid ${s.color}55">${s.label}</span>`;}
+function getHorizon(id){return HORIZONS.find(h=>h.id===id)||null;}
+function horizonBadge(hid){if(!hid)return '';const h=getHorizon(hid);if(!h)return '';return `<span class="badge" style="background:${h.color}18;color:${h.color};border:1px solid ${h.color}44;font-size:10px">${h.label}</span>`;}
 
 function populateFilters(){
-  [['filter-status','pub-status'],[],[]].flat();
-  const sfill=(id,arr,def)=>{const el=document.getElementById(id);if(!el)return;const cur=el.value;el.innerHTML=def;arr.forEach(x=>el.insertAdjacentHTML('beforeend',`<option value="${x.id||x.id}">${x.label||x.name}</option>`));el.value=cur;};
-  sfill('filter-theme',  themes,  '<option value="">Tous les thèmes</option>');
-  sfill('filter-status', statuses,'<option value="">Tous les statuts</option>');
-  sfill('filter-adjoint',adjoints,'<option value="">Tous les adjoints</option>');
-  sfill('pub-theme',     themes,  '<option value="">Tous les thèmes</option>');
-  sfill('pub-status',    statuses,'<option value="">Tous les statuts</option>');
-  sfill('edit-theme',    themes,  '<option value="">— Choisir —</option>');
-  sfill('edit-status',   statuses,'<option value="">— Choisir —</option>');
-  // Horizons (static)
-  ['filter-horizon','pub-horizon'].forEach(fid=>{
+  // themes
+  ['filter-theme','pub-theme','edit-theme'].forEach(fid=>{
     const el=document.getElementById(fid); if(!el) return;
     const cur=el.value;
-    el.innerHTML='<option value="">Tous les horizons</option>';
+    el.innerHTML=fid.startsWith('edit')?'':'<option value="">Tous les thèmes</option>';
+    themes.forEach(t=>el.insertAdjacentHTML('beforeend',`<option value="${t.id}">${t.name}</option>`));
+    el.value=cur;
+  });
+  // horizons (static list)
+  ['filter-horizon','pub-horizon','edit-horizon'].forEach(fid=>{
+    const el=document.getElementById(fid); if(!el) return;
+    const cur=el.value;
+    el.innerHTML=fid.startsWith('edit')?'<option value="">— Non planifié —</option>':'<option value="">Tous horizons</option>';
     HORIZONS.forEach(h=>el.insertAdjacentHTML('beforeend',`<option value="${h.id}">${h.label}</option>`));
     el.value=cur;
   });
-  // Adjoints
+  // statuses
+  ['filter-status','pub-status','edit-status'].forEach(fid=>{
+    const el=document.getElementById(fid); if(!el) return;
+    const cur=el.value;
+    el.innerHTML=fid.startsWith('edit')?'':'<option value="">Tous les statuts</option>';
+    statuses.forEach(s=>el.insertAdjacentHTML('beforeend',`<option value="${s.id}">${s.label}</option>`));
+    el.value=cur;
+  });
+  // adjoints
   ['filter-adjoint','edit-adjoint','u-adjoint'].forEach(fid=>{
     const el=document.getElementById(fid); if(!el) return;
     const cur=el.value;
@@ -727,284 +771,284 @@ function populateFilters(){
   });
 }
 
+
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
 function renderDashboard(){
   const total=promises.length;
-  const done   =promises.filter(p=>p.statusId==='s4').length;
+  const done=promises.filter(p=>p.statusId==='s4').length;
   const partial=promises.filter(p=>p.statusId==='s5').length;
-  const inprog =promises.filter(p=>p.statusId==='s3').length;
-  const study  =promises.filter(p=>p.statusId==='s2').length;
+  const inprog=promises.filter(p=>p.statusId==='s3').length;
+  const study=promises.filter(p=>p.statusId==='s2').length;
   const pct=total?Math.round((done+partial*0.5)/total*100):0;
   document.getElementById('stats-grid').innerHTML=`
     <div class="stat-card"><div class="val">${total}</div><div class="lbl">Engagements total</div></div>
-    <div class="stat-card" style="border-left-color:var(--accent)"><div class="val" style="color:var(--accent-dark)">${done}</div><div class="lbl">Réalisés</div><div class="sub">${total?Math.round(done/total*100):0}% du programme</div></div>
+    <div class="stat-card" style="border-left-color:var(--accent)"><div class="val" style="color:var(--accent-dark)">${done}</div><div class="lbl">Mis en œuvre</div><div class="sub">${total?Math.round(done/total*100):0}% du programme</div></div>
     <div class="stat-card" style="border-left-color:#f59e0b"><div class="val" style="color:#b45309">${inprog}</div><div class="lbl">En cours</div></div>
     <div class="stat-card" style="border-left-color:#38bdf8"><div class="val" style="color:#0369a1">${study}</div><div class="lbl">À l'étude</div></div>
     <div class="stat-card" style="border-left-color:#a3e635"><div class="val" style="color:#4d7c0f">${partial}</div><div class="lbl">Partiellement réalisés</div></div>
-    <div class="stat-card" style="border-left-color:var(--primary-light)"><div class="val" style="color:var(--primary-dark)">${pct}%</div><div class="lbl">Taux d'avancement</div></div>`;
+    <div class="stat-card" style="border-left-color:var(--primary-light)"><div class="val" style="color:var(--primary-dark)">${pct}%</div><div class="lbl">Taux d'avancement</div></div>
+  `;
   document.getElementById('global-progress').style.width=pct+'%';
-  document.getElementById('progress-label').textContent=`${done} engagements réalisés sur ${total}`;
+  document.getElementById('progress-label').textContent=`${done} engagements mis en œuvre sur ${total}`;
   document.getElementById('progress-pct').textContent=pct+'%';
   renderCharts();
 }
 
 function renderCharts(){
   Object.values(charts).forEach(c=>c.destroy()); charts={};
-  const font={family:'Nunito',size:10};
-  // 1 — Doughnut statuts
-  const counts={}; statuses.forEach(s=>{counts[s.id]=0;}); promises.forEach(p=>{if(counts[p.statusId]!==undefined)counts[p.statusId]++;});
+  const statusCounts={};statuses.forEach(s=>{statusCounts[s.id]=0;});
+  promises.forEach(p=>{if(statusCounts[p.statusId]!==undefined)statusCounts[p.statusId]++;});
   charts.status=new Chart(document.getElementById('chart-status'),{
     type:'doughnut',
-    data:{labels:statuses.map(s=>s.label),datasets:[{data:statuses.map(s=>counts[s.id]||0),backgroundColor:statuses.map(s=>s.color),borderWidth:2,borderColor:'#fff'}]},
-    options:{plugins:{legend:{position:'bottom',labels:{font,boxWidth:12,padding:6}}},responsive:true,maintainAspectRatio:false}
+    data:{labels:statuses.map(s=>s.label),datasets:[{data:statuses.map(s=>statusCounts[s.id]),backgroundColor:statuses.map(s=>s.color),borderWidth:2}]},
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:10,family:'Nunito'},boxWidth:12,padding:6}}},responsive:true,maintainAspectRatio:false}
   });
-  // 2 — Avancement par thème (% réalisé)
   const tLabels=themes.map(t=>{const w=t.name.split(' ');return w.slice(0,3).join(' ')+(w.length>3?'…':'');});
   const tData=themes.map(t=>{const tp=promises.filter(p=>p.themeId===t.id);if(!tp.length)return 0;const d=tp.filter(p=>p.statusId==='s4').length+tp.filter(p=>p.statusId==='s5').length*0.5;return Math.round(d/tp.length*100);});
   charts.theme=new Chart(document.getElementById('chart-theme'),{
     type:'bar',
-    data:{labels:tLabels,datasets:[{data:tData,backgroundColor:config.primaryColor||'#2563eb',borderRadius:4,label:'% réalisé'}]},
-    options:{indexAxis:'y',plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false,scales:{x:{max:100,ticks:{callback:v=>v+'%',font},grid:{color:'#f1f5f9'}},y:{ticks:{font}}}}
+    data:{labels:tLabels,datasets:[{data:tData,backgroundColor:'#1a8ca3',borderRadius:4,label:'% réalisé'}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100,ticks:{callback:v=>v+'%',font:{family:'Nunito'}}}},responsive:true,maintainAspectRatio:false}
   });
-  // 3 — Engagements par adjoint (total)
-  const aLabels=adjoints.map(a=>a.name.split(' ')[0]);
-  const aData=adjoints.map(a=>promises.filter(p=>p.adjointId===a.id).length);
+  const aList=adjoints.filter(a=>a.id!=='a0');
+  const aLabels=aList.map(a=>a.name.split(' ')[0]);
   charts.adjoint=new Chart(document.getElementById('chart-adjoint'),{
     type:'bar',
-    data:{labels:aLabels,datasets:[{data:aData,backgroundColor:config.accentColor||'#059669',borderRadius:4,label:'Engagements'}]},
-    options:{plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{font,stepSize:1}},x:{ticks:{font}}}}
-  });
-  // 4 — Stacked bar horizons
-  const hLabels=[...HORIZONS.map(h=>h.label),'Non planifié'];
-  const hIds=[...HORIZONS.map(h=>h.id),''];
-  charts.timeline=new Chart(document.getElementById('chart-timeline'),{
-    type:'bar',
-    data:{labels:hLabels,datasets:statuses.map(s=>({
+    data:{labels:aLabels,datasets:statuses.map(s=>({
       label:s.label,
-      data:hIds.map(hid=>promises.filter(p=>(p.horizonId||'')===(hid)&&p.statusId===s.id).length),
+      data:aList.map(a=>promises.filter(p=>p.adjointId===a.id&&p.statusId===s.id).length),
       backgroundColor:s.color,borderRadius:3,borderWidth:0,
     }))},
     options:{
-      plugins:{legend:{position:'bottom',labels:{font,boxWidth:12,padding:6}}},
+      plugins:{legend:{position:'bottom',labels:{font:{size:10,family:'Nunito'},boxWidth:12,padding:6}}},
       responsive:true,maintainAspectRatio:false,
-      scales:{x:{stacked:true,ticks:{font}},y:{stacked:true,beginAtZero:true,ticks:{font,stepSize:1}}}
+      scales:{x:{stacked:true,ticks:{font:{family:'Nunito',size:10}}},y:{stacked:true,beginAtZero:true,ticks:{font:{family:'Nunito'},stepSize:1}}}
+    }
+  });
+  const hLabels=[...HORIZONS.map(h=>h.label),'Non planifié'];
+  const hIds=[...HORIZONS.map(h=>h.id),''];
+  const horizonDatasets=statuses.map(s=>({
+    label:s.label,
+    data:hIds.map(hid=>promises.filter(p=>(p.horizonId||'')===(hid)&&p.statusId===s.id).length),
+    backgroundColor:s.color,
+    borderRadius:3,
+    borderWidth:0,
+  }));
+  charts.timeline=new Chart(document.getElementById('chart-timeline'),{
+    type:'bar',
+    data:{labels:hLabels,datasets:horizonDatasets},
+    options:{
+      plugins:{legend:{position:'bottom',labels:{font:{size:10,family:'Nunito'},boxWidth:12,padding:6}}},
+      responsive:true,maintainAspectRatio:false,
+      scales:{x:{stacked:true,ticks:{font:{family:'Nunito',size:10}}},y:{stacked:true,beginAtZero:true,ticks:{font:{family:'Nunito'},stepSize:1}}}
     }
   });
 }
 
-// ── ENGAGEMENTS ───────────────────────────────────────────────────────────────
-function renderPromises(){
-  const q  =(document.getElementById('filter-search')?.value||'').toLowerCase();
-  const tid= document.getElementById('filter-theme')?.value;
-  const sid= document.getElementById('filter-status')?.value;
-  const hid= document.getElementById('filter-horizon')?.value;
-  const aid= document.getElementById('filter-adjoint')?.value;
+// ── PROMISES LIST ─────────────────────────────────────────────────────────────
+function filteredPromises(){
+  const q=(document.getElementById('filter-search')?.value||'').toLowerCase();
+  const tid=document.getElementById('filter-theme')?.value;
+  const sid=document.getElementById('filter-status')?.value;
+  const aid=document.getElementById('filter-adjoint')?.value;
+  const hid=document.getElementById('filter-horizon')?.value;
   let list=promises;
-  if(q)   list=list.filter(p=>p.label.toLowerCase().includes(q));
+  if(q)   list=list.filter(p=>p.label.toLowerCase().includes(q)||(p.publicComment||'').toLowerCase().includes(q));
   if(tid) list=list.filter(p=>p.themeId===tid);
   if(sid) list=list.filter(p=>p.statusId===sid);
-  if(hid) list=list.filter(p=>p.horizonId===hid);
   if(aid) list=list.filter(p=>p.adjointId===aid);
-  const tbody=document.getElementById('promises-tbody');
-  if(!list.length){tbody.innerHTML='<tr><td colspan="6" class="empty-state"><div class="ico">🔍</div><p>Aucun engagement trouvé.</p></td></tr>';return;}
-  const canEdit=currentUser.role==='admin'||(currentUser.role==='adjoint');
-  tbody.innerHTML=list.map(p=>{
-    const ownPromise=currentUser.role==='adjoint'?p.adjointId===currentUser.adjointId:true;
-    const editBtn=canEdit
-      ? (ownPromise
-          ? `<button class="btn btn-secondary btn-sm" onclick="openPromiseModal('${p.id}')">✏️</button>`
-          : `<button class="btn btn-secondary btn-sm" onclick="openPromiseModal('${p.id}')">👁</button>`)
-      : `<button class="btn btn-secondary btn-sm" onclick="openPromiseModal('${p.id}')">👁</button>`;
-    return `<tr>
-      <td style="max-width:320px"><span style="font-weight:600;line-height:1.4">${p.label}</span></td>
-      <td style="font-size:12px;color:var(--gray-500)">${getTheme(p.themeId).name}</td>
-      <td>${horizonBadge(p.horizonId)}</td>
-      <td style="font-size:12px">${getAdjoint(p.adjointId).name}</td>
-      <td>${statusBadge(p.statusId)}</td>
-      <td>${editBtn}</td>
-    </tr>`;
-  }).join('');
+  if(hid) list=list.filter(p=>p.horizonId===hid);
+  return list;
 }
 
+function renderPromises(){
+  const list=filteredPromises();
+  const tbody=document.getElementById('promises-tbody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="ico">🔍</div><p>Aucun engagement trouvé.</p></div></td></tr>';document.getElementById('promises-count').textContent='';return;}
+  tbody.innerHTML=list.map((p,i)=>`<tr>
+    <td style="color:var(--gray-500);font-size:11px;font-weight:700">${i+1}</td>
+    <td style="max-width:340px">
+      <div style="font-weight:600;line-height:1.4;font-size:13px">${p.label}</div>
+      ${p.horizonId?`<div style="margin-top:3px">${horizonBadge(p.horizonId)}</div>`:''}
+    </td>
+    <td style="font-size:11.5px;color:var(--gray-700);font-weight:600;max-width:140px">${getTheme(p.themeId).name}</td>
+    <td style="font-size:12px;white-space:nowrap">${getAdjoint(p.adjointId).name}</td>
+    <td>${statusBadge(p.statusId)}</td>
+    <td style="font-size:11px;color:var(--gray-500);white-space:nowrap;font-weight:600">${p.updated||p.created}</td>
+    <td>${currentUser.role==='adjoint'&&p.adjointId!==currentUser.adjointId?`<button class="btn btn-secondary btn-sm" onclick="openPromiseModal('${p.id}')" title="Consulter" style="opacity:.6">👁</button>`:`<button class="btn btn-secondary btn-sm" onclick="openPromiseModal('${p.id}')">✏️</button>`}</td>
+  </tr>`).join('');
+  document.getElementById('promises-count').textContent=`${list.length} engagement${list.length>1?'s':''} affiché${list.length>1?'s':''}`;
+}
+
+document.getElementById('filter-search').addEventListener('input', renderPromises);
+
+// ── PROMISE MODAL ─────────────────────────────────────────────────────────────
+let currentEditId=null;
 function openPromiseModal(id){
-  const p=id?promises.find(x=>x.id===id):null;
-  const ownPromise=!id||(currentUser.role==='admin')||(p?.adjointId===currentUser.adjointId);
-  const ro=currentUser.role==='lecteur'||(currentUser.role==='adjoint'&&!ownPromise);
+  currentEditId=id||null; populateFilters();
+  document.getElementById('modal-title').textContent=id?'Modifier l\'engagement':'Nouvel engagement';
+  document.getElementById('btn-delete').style.display=(id&&currentUser.role==='admin')?'inline-flex':'none';
   switchTab('tab-info');
-  document.getElementById('edit-id').value=id||'';
-  document.getElementById('edit-label').value=p?.label||'';
-  document.getElementById('edit-label').readOnly=ro;
-  document.getElementById('edit-note').value=p?.note||'';
-  document.getElementById('edit-note').readOnly=ro;
-  document.getElementById('edit-public-comment').value=p?.publicComment||'';
-  document.getElementById('edit-public-comment').readOnly=ro;
-  populateFilters();
-  document.getElementById('edit-theme').value=p?.themeId||themes[0]?.id||'';
-  document.getElementById('edit-theme').disabled=ro;
-  document.getElementById('edit-status').value=p?.statusId||statuses[0]?.id||'';
-  document.getElementById('edit-status').disabled=ro;
-  document.getElementById('edit-horizon').value=p?.horizonId||'';
-  document.getElementById('edit-horizon').disabled=ro;
-  document.getElementById('edit-adjoint').value=p?.adjointId||(currentUser.role==='adjoint'?currentUser.adjointId:adjoints[0]?.id||'');
-  document.getElementById('edit-adjoint').disabled=ro||currentUser.role==='adjoint';
-  document.getElementById('btn-save').style.display=ro?'none':'inline-flex';
-  document.getElementById('modal-title').textContent=id?(ro?'Détail engagement':'Modifier l\'engagement'):'Nouvel engagement';
-  // History
-  const hl=document.getElementById('history-list');
-  hl.innerHTML=(p?.history?.length)
-    ? p.history.slice().reverse().map(h=>`<div class="history-item"><div class="hi-date">${h.date} — ${h.by||'?'}</div><div>${h.text}</div></div>`).join('')
-    : '<div style="color:var(--gray-500);font-size:13px">Aucune modification enregistrée.</div>';
+  if(id){
+    const p=promises.find(x=>x.id===id); if(!p) return;
+    document.getElementById('edit-id').value=p.id;
+    document.getElementById('edit-label').value=p.label;
+    document.getElementById('edit-theme').value=p.themeId;
+    document.getElementById('edit-adjoint').value=p.adjointId;
+    document.getElementById('edit-status').value=p.statusId;
+    document.getElementById('edit-horizon').value=p.horizonId||'';
+    document.getElementById('edit-note').value=p.note||'';
+    document.getElementById('edit-public-comment').value=p.publicComment||'';
+    const hist=p.history||[];
+    document.getElementById('history-list').innerHTML=hist.length
+      ?hist.slice().reverse().map(h=>`<div class="history-item"><div class="history-dot"></div><div style="flex:1"><div style="font-size:13px">${h.action}</div><div class="history-meta">${h.date} · ${h.user}</div></div></div>`).join('')
+      :'<div class="empty-state"><div class="ico">📋</div><p>Aucun historique.</p></div>';
+  } else {
+    document.getElementById('edit-id').value='';
+    document.getElementById('edit-label').value='';
+    document.getElementById('edit-theme').value=themes[0]?.id||'';
+    document.getElementById('edit-adjoint').value=currentUser.role==='adjoint'?currentUser.adjointId:'a0';
+    document.getElementById('edit-status').value='s1';
+    document.getElementById('edit-horizon').value='';
+    document.getElementById('edit-note').value='';
+    document.getElementById('edit-public-comment').value='';
+    document.getElementById('history-list').innerHTML='<div class="empty-state"><div class="ico">📋</div><p>Aucun historique.</p></div>';
+  }
+  const ownPromise=!id||(promises.find(x=>x.id===id)?.adjointId===currentUser.adjointId);
+  const ro=currentUser.role==='lecteur'||(currentUser.role==='adjoint'&&!ownPromise);
+  ['edit-label','edit-note','edit-public-comment'].forEach(fid=>document.getElementById(fid).readOnly=ro);
+  ['edit-theme','edit-adjoint','edit-status','edit-horizon'].forEach(fid=>document.getElementById(fid).disabled=ro);
+  document.getElementById('btn-save').style.display=ro?'none':'';
   document.getElementById('promise-modal').classList.add('open');
 }
 
+
 function savePromise(){
-  const id=document.getElementById('edit-id').value;
   const label=document.getElementById('edit-label').value.trim();
-  if(!label){alert('Le libellé est requis.');return;}
-  const newData={
-    themeId:  document.getElementById('edit-theme').value,
-    adjointId:document.getElementById('edit-adjoint').value,
-    statusId: document.getElementById('edit-status').value,
-    horizonId:document.getElementById('edit-horizon').value,
-    note:     document.getElementById('edit-note').value.trim(),
-    publicComment: document.getElementById('edit-public-comment').value.trim(),
-    updated:  now(),
-  };
-  if(id){
-    const p=promises.find(x=>x.id===id);
-    if(p){
-      const changes=[];
-      if(p.statusId!==newData.statusId) changes.push(`Statut : ${getStatus(p.statusId).label} → ${getStatus(newData.statusId).label}`);
-      if(p.horizonId!==newData.horizonId) changes.push(`Horizon : ${getHorizon(p.horizonId)?.label||'Non planifié'} → ${getHorizon(newData.horizonId)?.label||'Non planifié'}`);
-      if(changes.length) p.history=[...p.history,{date:now(),by:currentUser.name,text:changes.join(' | ')}];
-      Object.assign(p,newData,{label});
-    }
-  } else {
-    promises.push({id:uid(),label,...newData,created:now(),history:[]});
-  }
+  if(!label){alert('Le libellé est obligatoire.');return;}
+  const id=document.getElementById('edit-id').value||uid();
+  const isNew=!document.getElementById('edit-id').value;
+  const oldP=promises.find(x=>x.id===id);
+  const oldStat=oldP?getStatus(oldP.statusId).label:'';
+  const newStat=getStatus(document.getElementById('edit-status').value).label;
+  const histEntry={date:today(),user:currentUser.name,action:isNew?'Engagement créé':oldStat!==newStat?`Statut : "${oldStat}" → "${newStat}"`:'Informations mises à jour'};
+  const updated={id,label,themeId:document.getElementById('edit-theme').value,horizonId:document.getElementById('edit-horizon').value,adjointId:document.getElementById('edit-adjoint').value,statusId:document.getElementById('edit-status').value,note:document.getElementById('edit-note').value,publicComment:document.getElementById('edit-public-comment').value,created:oldP?.created||today(),updated:today(),history:[...(oldP?.history||[]),histEntry]};
+  if(isNew) promises.push(updated); else {const i=promises.findIndex(x=>x.id===id);promises[i]=updated;}
   persist(); closeModal('promise-modal'); renderPromises();
-  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
 }
 
-// ── THÈMES ────────────────────────────────────────────────────────────────────
-function renderThemes(){
-  document.getElementById('themes-list').innerHTML=themes.map(t=>`
-    <div class="theme-row">
-      <span class="theme-label">${t.name}</span>
-      <button class="btn btn-secondary btn-sm" onclick="openEditModal('theme','${t.id}')">✎</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteTheme('${t.id}')">Supprimer</button>
-    </div>`).join('');
+function deleteCurrentPromise(){
+  if(!currentEditId||!confirm('Supprimer cet engagement définitivement ?'))return;
+  promises=promises.filter(p=>p.id!==currentEditId);
+  persist(); closeModal('promise-modal'); renderPromises();
 }
-function openThemeModal(){openEditModal('theme',null);}
-function deleteTheme(id){if(!confirm('Supprimer ce thème ?'))return;themes=themes.filter(t=>t.id!==id);persist();renderThemes();populateFilters();}
+
+// ── THEMES ────────────────────────────────────────────────────────────────────
+function renderThemes(){
+  const isAdmin=currentUser.role==='admin';
+  document.getElementById('themes-list').innerHTML=themes.map(t=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-100)">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${t.name}</div>
+        <div style="font-size:11px;color:var(--gray-500)">${promises.filter(p=>p.themeId===t.id).length} engagements</div>
+      </div>
+      ${isAdmin?`<button class="btn btn-secondary btn-sm" onclick="editTheme('${t.id}')" style="margin-right:4px">✎</button><button class="btn btn-danger btn-sm" onclick="deleteTheme('${t.id}')">✕</button>`:''}
+    </div>`).join('');
+  document.getElementById('themes-stats').innerHTML=themes.map(t=>{
+    const tp=promises.filter(p=>p.themeId===t.id);
+    const done=tp.filter(p=>p.statusId==='s4').length;
+    const pct=tp.length?Math.round(done/tp.length*100):0;
+    return `<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;font-weight:600"><span>${t.name}</span><span style="color:var(--gray-500)">${done}/${tp.length} — ${pct}%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${pct>=75?'var(--accent)':pct>=40?'var(--warning)':'var(--primary-light)'}"></div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('add-theme-form').style.display=isAdmin?'':'none';
+}
+function addTheme(){const n=document.getElementById('new-theme-name').value.trim();if(!n)return;themes.push({id:uid(),name:n});persist();populateFilters();renderThemes();document.getElementById('new-theme-name').value='';}
+function deleteTheme(id){if(promises.some(p=>p.themeId===id)){alert('Ce thème est utilisé par des engagements.');return;}themes=themes.filter(t=>t.id!==id);persist();populateFilters();renderThemes();}
 
 // ── ADJOINTS ──────────────────────────────────────────────────────────────────
 function renderAdjoints(){
-  const grid=document.getElementById('adjoints-grid');
-  grid.innerHTML=adjoints.map(a=>{
-    const initials=a.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const avatar=a.photo
-      ? `<img src="${a.photo}" class="adjoint-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-      : '';
-    const placeholder=`<div class="adjoint-avatar-placeholder" ${a.photo?'style="display:none"':''}>${initials}</div>`;
-    const nb=promises.filter(p=>p.adjointId===a.id).length;
-    const done=promises.filter(p=>p.adjointId===a.id&&p.statusId==='s4').length;
-    return `<div class="adjoint-card">
-      ${avatar}${placeholder}
-      <div class="adjoint-info">
-        <div class="name">${a.name}</div>
-        <div class="role">${a.role}</div>
-        <div style="font-size:11px;color:var(--gray-500)">${nb} engagement${nb>1?'s':''} · ${done} réalisé${done>1?'s':''}</div>
-      </div>
-      <div class="adjoint-actions">
-        <button class="btn btn-secondary btn-sm" onclick="openEditModal('adjoint','${a.id}')">✎</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteAdjoint('${a.id}')">✕</button>
+  const isAdmin=currentUser.role==='admin';
+  document.getElementById('adjoints-list').innerHTML=adjoints.map(a=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--gray-100)">
+      ${a.photo?`<img src="${a.photo}" alt="${a.name}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`:'<div style="width:36px;height:36px;border-radius:50%;background:var(--gray-100);flex-shrink:0"></div>'}
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${a.name}</div><div style="font-size:11px;color:var(--gray-500)">${a.role}</div></div>
+      <span style="font-size:11px;color:var(--gray-500);font-weight:600">${promises.filter(p=>p.adjointId===a.id).length}</span>
+      ${isAdmin?`<button class="btn btn-secondary btn-sm" onclick="editAdjoint('${a.id}')" style="margin-right:4px">✎</button><button class="btn btn-danger btn-sm" onclick="deleteAdjoint('${a.id}')">✕</button>`:''}
+    </div>`).join('');
+  document.getElementById('adjoints-stats').innerHTML=adjoints.filter(a=>a.id!=='a0').map(a=>{
+    const ap=promises.filter(p=>p.adjointId===a.id);
+    const done=ap.filter(p=>p.statusId==='s4').length;
+    const pct=ap.length?Math.round(done/ap.length*100):0;
+    return `<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px">
+      ${a.photo?`<img src="${a.photo}" alt="${a.name}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-top:2px" onerror="this.style.display='none'">`:'<div style="width:40px;height:40px;border-radius:50%;background:var(--gray-100);flex-shrink:0"></div>'}
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;font-weight:600"><span>${a.name}</span><span style="color:var(--gray-500)">${ap.length} eng. · ${pct}% réalisés</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--primary-light)"></div></div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">${statuses.map(s=>{const cnt=ap.filter(p=>p.statusId===s.id).length;return cnt?`<span class="badge" style="background:${s.color}22;color:${s.color};font-size:10px">${s.label} (${cnt})</span>`:''}).join('')}</div>
       </div>
     </div>`;
   }).join('');
+  document.getElementById('add-adjoint-form').style.display=isAdmin?'':'none';
 }
-function openAdjointModal(){openEditModal('adjoint',null);}
-function deleteAdjoint(id){if(!confirm('Supprimer cet adjoint ?'))return;adjoints=adjoints.filter(a=>a.id!==id);persist();renderAdjoints();populateFilters();}
+function addAdjoint(){const n=document.getElementById('new-adj-name').value.trim(),r=document.getElementById('new-adj-role').value.trim();if(!n)return;adjoints.push({id:uid(),name:n,role:r});persist();populateFilters();renderAdjoints();document.getElementById('new-adj-name').value='';document.getElementById('new-adj-role').value='';}
+function deleteAdjoint(id){if(promises.some(p=>p.adjointId===id)){alert('Cet élu est responsable d\'engagements.');return;}adjoints=adjoints.filter(a=>a.id!==id);persist();populateFilters();renderAdjoints();}
 
 // ── STATUTS ───────────────────────────────────────────────────────────────────
 function renderStatuts(){
+  const isAdmin=currentUser.role==='admin';
   document.getElementById('statuts-list').innerHTML=statuses.map(s=>`
-    <div class="statut-row">
-      <div class="statut-dot" style="background:${s.color}"></div>
-      <span class="statut-label">${s.label}</span>
-      <button class="btn btn-secondary btn-sm" onclick="openEditModal('status','${s.id}')">✎</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteStatus('${s.id}')">Supprimer</button>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--gray-100)">
+      <span style="width:14px;height:14px;border-radius:50%;background:${s.color};flex-shrink:0;display:inline-block"></span>
+      <span style="flex:1;font-size:13.5px;font-weight:600">${s.label}</span>
+      <span style="font-size:11px;color:var(--gray-500);font-weight:600">${promises.filter(p=>p.statusId===s.id).length} eng.</span>
+      ${isAdmin?`<button class="btn btn-secondary btn-sm" onclick="editStatus('${s.id}')" style="margin-right:4px">✎</button><button class="btn btn-danger btn-sm" onclick="deleteStatus('${s.id}')">✕</button>`:''}
     </div>`).join('');
 }
-function openStatusModal(){openEditModal('status',null);}
-function deleteStatus(id){if(!confirm('Supprimer ce statut ?'))return;statuses=statuses.filter(s=>s.id!==id);persist();renderStatuts();populateFilters();}
+function addStatus(){const n=document.getElementById('new-status-name').value.trim(),c=document.getElementById('new-status-color').value;if(!n)return;statuses.push({id:uid(),label:n,color:c});persist();populateFilters();renderStatuts();document.getElementById('new-status-name').value='';}
+function deleteStatus(id){if(promises.some(p=>p.statusId===id)){alert('Ce statut est utilisé par des engagements.');return;}statuses=statuses.filter(s=>s.id!==id);persist();populateFilters();renderStatuts();}
 
-// ── MODAL GÉNÉRIQUE ───────────────────────────────────────────────────────────
-let _editModalSave=null;
-function openEditModal(type,id){
-  let title,bodyHtml,saveFn;
-  if(type==='theme'){
-    const t=id?themes.find(x=>x.id===id):null;
-    title=t?'Modifier le thème':'Nouveau thème';
-    bodyHtml=`<div class="form-group"><label>Nom du thème</label><input type="text" id="em-name" value="${t?.name||''}"></div>`;
-    saveFn=()=>{
-      const name=document.getElementById('em-name').value.trim();
-      if(!name){alert('Nom requis.');return;}
-      if(id){const t=themes.find(x=>x.id===id);if(t)t.name=name;}
-      else themes.push({id:uid(),name});
-      persist();closeModal('edit-modal');renderThemes();populateFilters();
-    };
-  } else if(type==='status'){
-    const s=id?statuses.find(x=>x.id===id):null;
-    title=s?'Modifier le statut':'Nouveau statut';
-    bodyHtml=`<div class="form-group"><label>Libellé</label><input type="text" id="em-name" value="${s?.label||''}"></div>
-    <div class="form-group"><label>Couleur</label><div class="color-pair"><input type="color" id="em-color-pick" value="${s?.color||'#94a3b8'}" oninput="document.getElementById('em-color').value=this.value"><input type="text" id="em-color" value="${s?.color||'#94a3b8'}" oninput="document.getElementById('em-color-pick').value=this.value||'#94a3b8'"></div></div>`;
-    saveFn=()=>{
-      const label=document.getElementById('em-name').value.trim();
-      const color=document.getElementById('em-color').value.trim()||'#94a3b8';
-      if(!label){alert('Libellé requis.');return;}
-      if(id){const s=statuses.find(x=>x.id===id);if(s){s.label=label;s.color=color;}}
-      else statuses.push({id:uid(),label,color});
-      persist();closeModal('edit-modal');renderStatuts();populateFilters();
-    };
-  } else if(type==='adjoint'){
-    const a=id?adjoints.find(x=>x.id===id):null;
-    title=a?'Modifier l\'élu':'Nouvel adjoint / élu';
-    bodyHtml=`<div class="form-group"><label>Nom complet</label><input type="text" id="em-name" value="${a?.name||''}"></div>
-    <div class="form-group"><label>Délégation / rôle</label><input type="text" id="em-role" value="${a?.role||''}"></div>
-    <div class="form-group"><label>URL photo (optionnel)</label><input type="text" id="em-photo" value="${a?.photo||''}" placeholder="https://…"></div>`;
-    saveFn=()=>{
-      const name=document.getElementById('em-name').value.trim();
-      const role=document.getElementById('em-role').value.trim();
-      const photo=document.getElementById('em-photo').value.trim();
-      if(!name){alert('Nom requis.');return;}
-      if(id){const a=adjoints.find(x=>x.id===id);if(a){a.name=name;a.role=role;a.photo=photo;}}
-      else adjoints.push({id:uid(),name,role,photo});
-      persist();closeModal('edit-modal');renderAdjoints();populateFilters();
-    };
-  }
+// ── EDIT MODAL ────────────────────────────────────────────────────────────────
+let _editSaveFn=null;
+function openEditModal(title,bodyHTML,saveFn){
   document.getElementById('edit-modal-title').textContent=title;
-  document.getElementById('edit-modal-body').innerHTML=bodyHtml;
-  _editModalSave=saveFn;
+  document.getElementById('edit-modal-body').innerHTML=bodyHTML;
+  _editSaveFn=saveFn;
   document.getElementById('edit-modal').classList.add('open');
 }
-function runEditModalSave(){if(_editModalSave)_editModalSave();}
+function runEditModalSave(){
+  if(_editSaveFn) _editSaveFn();
+  closeModal('edit-modal');
+}
+function editTheme(id){
+  const t=themes.find(x=>x.id===id);if(!t)return;
+  openEditModal('Modifier le thème',
+    `<div class="form-group"><label>Intitulé</label><input id="em-name" class="form-control" value="${t.name.replace(/"/g,'&quot;')}"></div>`,
+    ()=>{const n=document.getElementById('em-name').value.trim();if(n){t.name=n;persist();populateFilters();renderThemes();}}
+  );
+}
+function editStatus(id){
+  const s=statuses.find(x=>x.id===id);if(!s)return;
+  openEditModal('Modifier le statut',
+    `<div class="form-group"><label>Intitulé</label><input id="em-name" class="form-control" value="${s.label.replace(/"/g,'&quot;')}"></div>
+     <div class="form-group"><label>Couleur</label><input id="em-color" type="color" value="${s.color}" style="height:38px;width:60px;padding:2px;cursor:pointer"></div>`,
+    ()=>{const n=document.getElementById('em-name').value.trim(),c=document.getElementById('em-color').value;if(n){s.label=n;s.color=c;persist();populateFilters();renderStatuts();}}
+  );
+}
+function editAdjoint(id){
+  const a=adjoints.find(x=>x.id===id);if(!a)return;
+  openEditModal('Modifier l\'élu',
+    `<div class="form-group"><label>Nom</label><input id="em-name" class="form-control" value="${a.name.replace(/"/g,'&quot;')}"></div>
+     <div class="form-group"><label>Délégation</label><input id="em-role" class="form-control" value="${(a.role||'').replace(/"/g,'&quot;')}"></div>
+     <div class="form-group"><label>URL photo</label><input id="em-photo" class="form-control" value="${(a.photo||'').replace(/"/g,'&quot;')}"></div>`,
+    ()=>{const n=document.getElementById('em-name').value.trim(),r=document.getElementById('em-role').value.trim(),ph=document.getElementById('em-photo').value.trim();if(n){a.name=n;a.role=r;a.photo=ph;persist();populateFilters();renderAdjoints();}}
+  );
+}
 
 // ── ADMIN ─────────────────────────────────────────────────────────────────────
 function renderAdmin(){
-  // Config form
-  document.getElementById('config-form').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div class="form-group"><label>Titre de l'application</label><input type="text" id="cfg-title" value="${config.appTitle||''}"></div>
-      <div class="form-group"><label>Sous-titre</label><input type="text" id="cfg-subtitle" value="${config.appSubtitle||''}"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
-      <div class="form-group"><label>Couleur principale</label><div class="color-pair"><input type="color" id="cfg-primary-pick" value="${config.primaryColor||'#2563eb'}" oninput="document.getElementById('cfg-primary').value=this.value"><input type="text" id="cfg-primary" value="${config.primaryColor||'#2563eb'}" oninput="document.getElementById('cfg-primary-pick').value=this.value||'#2563eb'"></div></div>
-      <div class="form-group"><label>Couleur sombre</label><div class="color-pair"><input type="color" id="cfg-dark-pick" value="${config.primaryDark||'#1e40af'}" oninput="document.getElementById('cfg-dark').value=this.value"><input type="text" id="cfg-dark" value="${config.primaryDark||'#1e40af'}" oninput="document.getElementById('cfg-dark-pick').value=this.value||'#1e40af'"></div></div>
-      <div class="form-group"><label>Couleur accent</label><div class="color-pair"><input type="color" id="cfg-accent-pick" value="${config.accentColor||'#059669'}" oninput="document.getElementById('cfg-accent').value=this.value"><input type="text" id="cfg-accent" value="${config.accentColor||'#059669'}" oninput="document.getElementById('cfg-accent-pick').value=this.value||'#059669'"></div></div>
-    </div>
-    <div class="form-group"><label>URL du logo</label><input type="text" id="cfg-logo" value="${config.logoUrl||''}" placeholder="https://ville.fr/logo.png — laisser vide pour aucun logo"></div>`;
-  // Users
   document.getElementById('users-tbody').innerHTML=users.map(u=>`<tr>
     <td><code style="font-size:12px">${u.login}</code></td>
     <td style="font-weight:600">${u.name}</td>
@@ -1013,19 +1057,6 @@ function renderAdmin(){
     <td><button class="btn btn-secondary btn-sm" onclick="openUserModal('${u.id}')" style="margin-right:4px">✎</button><button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">Supprimer</button></td>
   </tr>`).join('');
 }
-
-function saveConfig(){
-  config.appTitle     =document.getElementById('cfg-title').value.trim()||'Suivi des engagements';
-  config.appSubtitle  =document.getElementById('cfg-subtitle').value.trim();
-  config.primaryColor =document.getElementById('cfg-primary').value.trim()||'#2563eb';
-  config.primaryDark  =document.getElementById('cfg-dark').value.trim()||'#1e40af';
-  config.accentColor  =document.getElementById('cfg-accent').value.trim()||'#059669';
-  config.logoUrl      =document.getElementById('cfg-logo').value.trim();
-  applyConfig();
-  persist();
-  alert('Configuration enregistrée.');
-}
-
 function openUserModal(editId){
   populateFilters();
   const editing=editId?users.find(u=>u.id===editId):null;
@@ -1037,10 +1068,9 @@ function openUserModal(editId){
   document.getElementById('u-pass-label').textContent=editing?'Nouveau mot de passe (optionnel)':'Mot de passe';
   document.getElementById('u-role').value=editing?editing.role:'lecteur';
   document.getElementById('u-adjoint').value=editing?editing.adjointId:'';
-  document.getElementById('user-modal-title').textContent=editing?'Modifier l\'utilisateur':'Nouvel utilisateur';
+  document.querySelector('#user-modal .modal-header h3').textContent=editing?'Modifier l\'utilisateur':'Utilisateur';
   document.getElementById('user-modal').classList.add('open');
 }
-
 async function saveUser(){
   const id=document.getElementById('u-id').value;
   const login=document.getElementById('u-login').value.trim();
@@ -1054,29 +1084,23 @@ async function saveUser(){
   const passHash=passRaw?await hashPass(passRaw):null;
   if(id){
     const u=users.find(x=>x.id===id);
-    if(u){u.login=login;u.name=name;u.role=role;u.adjointId=adjointId;if(passHash)u.newPass=passHash;}
+    if(u){u.login=login;u.name=name;u.role=role;u.adjointId=adjointId;if(passHash)u.newPass=passHash;else delete u.newPass;}
   } else {
     users.push({id:uid(),login,name,newPass:passHash,role,adjointId});
   }
   await persist();
-  // Nettoyer les champs temporaires
   users.forEach(u=>{delete u.newPass;});
-  closeModal('user-modal'); renderAdmin();
+  closeModal('user-modal');renderAdmin();
 }
+function deleteUser(id){if(id===currentUser.id){alert('Vous ne pouvez pas supprimer votre propre compte.');return;}if(!confirm('Supprimer ?'))return;users=users.filter(u=>u.id!==id);persist();renderAdmin();}
 
-function deleteUser(id){
-  if(id===currentUser.id){alert('Vous ne pouvez pas supprimer votre propre compte.');return;}
-  if(!confirm('Supprimer cet utilisateur ?'))return;
-  users=users.filter(u=>u.id!==id);
-  persist(); renderAdmin();
-}
 
-// ── VUE PUBLIQUE ──────────────────────────────────────────────────────────────
+// ── PUBLIC VIEW ───────────────────────────────────────────────────────────────
 function renderPublic(){
-  const q  =(document.getElementById('pub-search')?.value||'').toLowerCase();
-  const tid= document.getElementById('pub-theme')?.value;
-  const sid= document.getElementById('pub-status')?.value;
-  const hid= document.getElementById('pub-horizon')?.value;
+  const q=(document.getElementById('pub-search')?.value||'').toLowerCase();
+  const tid=document.getElementById('pub-theme')?.value;
+  const sid=document.getElementById('pub-status')?.value;
+  const hid=document.getElementById('pub-horizon')?.value;
   let list=promises;
   if(q)   list=list.filter(p=>p.label.toLowerCase().includes(q)||(p.publicComment||'').toLowerCase().includes(q));
   if(tid) list=list.filter(p=>p.themeId===tid);
@@ -1102,80 +1126,100 @@ function exportablePromises(){
   if(currentUser.role==='adjoint') return promises.filter(p=>p.adjointId===currentUser.adjointId);
   return promises;
 }
+
 function exportCSV(){
   const list=exportablePromises();
   const h=['N°','Libellé','Thème','Horizon','Adjoint','Statut','Commentaire public','Créé le','Mis à jour'];
   const r=list.map((p,i)=>[i+1,`"${p.label.replace(/"/g,'""')}"`,getTheme(p.themeId).name,(getHorizon(p.horizonId)||{label:''}).label,getAdjoint(p.adjointId).name,getStatus(p.statusId).label,`"${(p.publicComment||'').replace(/"/g,'""')}"`,p.created,p.updated].join(';'));
   const blob=new Blob(['﻿'+[h.join(';'),...r].join('\n')],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='engagements.csv';a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='engagements-upv-viroflay.csv';a.click();
 }
+
 function exportPDF(){
   const list=exportablePromises();
   const adjLabel=currentUser.role==='adjoint'?' — '+getAdjoint(currentUser.adjointId).name:'';
-  const title=config.appTitle||'Suivi des engagements';
+  const dateStr=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+
+  // Group by theme
+  const byTheme={};
+  list.forEach(p=>{
+    if(!byTheme[p.themeId]) byTheme[p.themeId]=[];
+    byTheme[p.themeId].push(p);
+  });
+
+  const themeBlocks=Object.entries(byTheme).map(([tid,ps])=>{
+    const rows=ps.map((p,i)=>{
+      const s=getStatus(p.statusId);
+      return `<tr>
+        <td style="width:32px;color:#888;font-size:11px;vertical-align:top;padding-top:6px">${i+1}</td>
+        <td style="padding:5px 8px;font-size:12px;line-height:1.5">${p.label}${p.publicComment?`<div style="color:#555;font-style:italic;margin-top:3px;font-size:11px">${p.publicComment}</div>`:''}</td>
+        <td style="white-space:nowrap;padding:5px 6px;vertical-align:top"><span style="display:inline-block;padding:2px 8px;border-radius:99px;font-size:10.5px;font-weight:700;background:${s.color}22;color:${s.color};border:1px solid ${s.color}55">${s.label}</span></td>
+        <td style="font-size:11px;color:#666;white-space:nowrap;padding:5px 6px;vertical-align:top">${getAdjoint(p.adjointId).name}</td>
+      </tr>`;
+    }).join('');
+    return `<div style="margin-bottom:22px;break-inside:avoid">
+      <div style="background:#0d5f70;color:#fff;padding:7px 12px;font-size:12px;font-weight:700;border-radius:4px 4px 0 0;letter-spacing:.04em">${getTheme(tid).name}</div>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #d0e8ed;border-top:none;border-radius:0 0 4px 4px;overflow:hidden">
+        ${rows}
+      </table>
+    </div>`;
+  }).join('');
+
+  const statusLegend=statuses.map(s=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:10px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${s.color}"></span>${s.label}</span>`).join('');
+
   const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
-<title>${title}</title>
+<title>Engagements UPV — ${dateStr}</title>
 <style>
-body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;color:#111;margin:30px}
-h1{font-size:20px;margin-bottom:4px}
-.sub{color:#666;font-size:12px;margin-bottom:20px}
-table{width:100%;border-collapse:collapse}
-th{background:#f1f5f9;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#64748b;border-bottom:2px solid #e2e8f0}
-td{padding:8px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top;font-size:11.5px}
-.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700}
+  body{font-family:'Segoe UI',Arial,sans-serif;color:#0f2d35;margin:0;padding:28px 32px;font-size:13px}
+  @page{margin:18mm 14mm}
+  table tr:nth-child(even) td{background:#f7fbfc}
+  table td{border-bottom:1px solid #e8f2f5}
+  h1{font-size:18px;color:#0d5f70;margin:0 0 2px}
+  .sub{font-size:12px;color:#5a8a96;margin-bottom:18px}
+  .legend{margin-bottom:18px;padding:8px 12px;background:#f7fbfc;border:1px solid #d0e8ed;border-radius:4px}
+  @media print{body{padding:0}.no-print{display:none}}
 </style></head><body>
-<h1>${title}${adjLabel}</h1>
-<div class="sub">Exporté le ${new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}</div>
-<table>
-<thead><tr><th>#</th><th>Engagement</th><th>Thème</th><th>Horizon</th><th>Adjoint</th><th>Statut</th></tr></thead>
-<tbody>${list.map((p,i)=>`<tr>
-  <td>${i+1}</td>
-  <td>${p.label}</td>
-  <td>${getTheme(p.themeId).name}</td>
-  <td>${(getHorizon(p.horizonId)||{label:'—'}).label}</td>
-  <td>${getAdjoint(p.adjointId).name}</td>
-  <td><span class="badge" style="background:${getStatus(p.statusId).color}22;color:${getStatus(p.statusId).color}">${getStatus(p.statusId).label}</span></td>
-</tr>`).join('')}
-</tbody></table>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+  <div>
+    <h1>Union Pour Viroflay — Engagements municipaux 2026–2032${adjLabel}</h1>
+    <div class="sub">Généré le ${dateStr} · ${list.length} engagement${list.length>1?'s':''}</div>
+  </div>
+</div>
+<div class="legend"><strong style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#0d5f70">Légende : </strong>${statusLegend}</div>
+${themeBlocks}
+<div style="margin-top:24px;padding-top:12px;border-top:1px solid #d0e8ed;font-size:10px;color:#888;text-align:center">Union Pour Viroflay · unionpourviroflay.fr · Document confidentiel</div>
 <div class="no-print" style="position:fixed;bottom:20px;right:20px">
-  <button onclick="window.print()" style="background:#1e40af;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">🖨️ Imprimer / PDF</button>
+  <button onclick="window.print()" style="background:#0d5f70;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">🖨️ Imprimer / Enregistrer PDF</button>
 </div>
 </body></html>`;
+
   const w=window.open('','_blank');
   w.document.write(html);
   w.document.close();
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
+// ── MODAL UTILS ───────────────────────────────────────────────────────────────
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function switchTab(tabId){
-  ['tab-info','tab-history'].forEach(t=>{
-    document.getElementById(t).classList.toggle('active',t===tabId);
-    document.getElementById(t+'-content').style.display=t===tabId?'block':'none';
-  });
+  document.querySelectorAll('.tabs .tab').forEach((t,i)=>t.classList.toggle('active',['tab-info','tab-history'][i]===tabId));
+  document.getElementById('tab-info').style.display=tabId==='tab-info'?'block':'none';
+  document.getElementById('tab-history').style.display=tabId==='tab-history'?'block':'none';
 }
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));});
 
 // ── BOOTSTRAP ─────────────────────────────────────────────────────────────────
 (async()=>{
-  if(DEMO_MODE){
-    const banner=document.getElementById('demo-banner');
-    banner.style.display='block';
-    // Décaler le loading overlay et le login sous le bandeau
-    document.getElementById('loading-overlay').style.top='38px';
-    document.getElementById('login-page').style.top='38px';
-    document.getElementById('sidebar').style.top='38px';
-    document.getElementById('topbar').style.top='38px';
-    document.getElementById('main').style.paddingTop='82px'; // 54px topbar + 28px
-  }
-  applyConfig();
   const hasData=await loadFromServer();
   if(!hasData){
-    await migratePasswords();
+    // Premier déploiement : initialiser le serveur avec les 3 comptes par défaut
+    // (admin/admin123 · adjoint/adjoint123 · lecteur/lecteur123)
+    // → changer ces mots de passe immédiatement après la première connexion
     await initializeServer();
+  } else {
+    const pChanged=await migratePasswords();
+    if(pChanged) persist();
   }
-  applyConfig();
   document.getElementById('loading-overlay').style.display='none';
   document.getElementById('login-page').classList.add('show');
 })();
