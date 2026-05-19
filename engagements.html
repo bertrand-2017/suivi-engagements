@@ -103,7 +103,7 @@ tr:hover td { background: var(--gray-50); }
 .progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; transition: width .6s; }
 .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .chart-card { background: #fff; border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--gray-200); }
-.chart-card h4 { font-size: 12px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+.chart-card h4 { font-size: 11px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
 .chart-wrap { height: 200px; position: relative; }
 @media (max-width: 700px) { .charts-row { grid-template-columns: 1fr; } }
 
@@ -182,7 +182,7 @@ tr:hover td { background: var(--gray-50); }
 
 <!-- BANDEAU DÉMO (affiché uniquement en ?demo=1) -->
 <div id="demo-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:#f59e0b;color:#78350f;text-align:center;padding:7px 16px;font-size:12.5px;font-weight:700;font-family:'Nunito',sans-serif;letter-spacing:.02em">
-  ⚡ MODE DÉMO — agence <strong>2017</strong> · Les données sont sauvegardées localement dans ce navigateur · <a href="mailto:contact@agence2017.fr" style="color:#78350f;text-decoration:underline">Demander une démo personnalisée</a>
+  ⚡ MODE DÉMO — agence <strong>2017</strong> · Les données sont sauvegardées localement dans ce navigateur · <a href="mailto:bertrand@2017.fr" style="color:#78350f;text-decoration:underline">Demander une démo personnalisée</a>
 </div>
 
 <!-- LOADING OVERLAY -->
@@ -255,6 +255,8 @@ tr:hover td { background: var(--gray-50); }
   </div>
   <div class="charts-row">
     <div class="chart-card"><h4>Répartition par statut</h4><div class="chart-wrap"><canvas id="chart-status"></canvas></div></div>
+    <div class="chart-card"><h4>Avancement par thème</h4><div class="chart-wrap"><canvas id="chart-theme"></canvas></div></div>
+    <div class="chart-card"><h4>Engagements par adjoint</h4><div class="chart-wrap"><canvas id="chart-adjoint"></canvas></div></div>
     <div class="chart-card"><h4>Engagements par horizon</h4><div class="chart-wrap"><canvas id="chart-timeline"></canvas></div></div>
   </div>
 </div>
@@ -748,15 +750,31 @@ function renderDashboard(){
 
 function renderCharts(){
   Object.values(charts).forEach(c=>c.destroy()); charts={};
-  const font={family:'Nunito',size:11};
-  // Doughnut statuts
+  const font={family:'Nunito',size:10};
+  // 1 — Doughnut statuts
   const counts={}; statuses.forEach(s=>{counts[s.id]=0;}); promises.forEach(p=>{if(counts[p.statusId]!==undefined)counts[p.statusId]++;});
   charts.status=new Chart(document.getElementById('chart-status'),{
     type:'doughnut',
     data:{labels:statuses.map(s=>s.label),datasets:[{data:statuses.map(s=>counts[s.id]||0),backgroundColor:statuses.map(s=>s.color),borderWidth:2,borderColor:'#fff'}]},
     options:{plugins:{legend:{position:'bottom',labels:{font,boxWidth:12,padding:6}}},responsive:true,maintainAspectRatio:false}
   });
-  // Stacked bar horizons
+  // 2 — Avancement par thème (% réalisé)
+  const tLabels=themes.map(t=>{const w=t.name.split(' ');return w.slice(0,3).join(' ')+(w.length>3?'…':'');});
+  const tData=themes.map(t=>{const tp=promises.filter(p=>p.themeId===t.id);if(!tp.length)return 0;const d=tp.filter(p=>p.statusId==='s4').length+tp.filter(p=>p.statusId==='s5').length*0.5;return Math.round(d/tp.length*100);});
+  charts.theme=new Chart(document.getElementById('chart-theme'),{
+    type:'bar',
+    data:{labels:tLabels,datasets:[{data:tData,backgroundColor:config.primaryColor||'#2563eb',borderRadius:4,label:'% réalisé'}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false,scales:{x:{max:100,ticks:{callback:v=>v+'%',font},grid:{color:'#f1f5f9'}},y:{ticks:{font}}}}
+  });
+  // 3 — Engagements par adjoint (total)
+  const aLabels=adjoints.map(a=>a.name.split(' ')[0]);
+  const aData=adjoints.map(a=>promises.filter(p=>p.adjointId===a.id).length);
+  charts.adjoint=new Chart(document.getElementById('chart-adjoint'),{
+    type:'bar',
+    data:{labels:aLabels,datasets:[{data:aData,backgroundColor:config.accentColor||'#059669',borderRadius:4,label:'Engagements'}]},
+    options:{plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,ticks:{font,stepSize:1}},x:{ticks:{font}}}}
+  });
+  // 4 — Stacked bar horizons
   const hLabels=[...HORIZONS.map(h=>h.label),'Non planifié'];
   const hIds=[...HORIZONS.map(h=>h.id),''];
   charts.timeline=new Chart(document.getElementById('chart-timeline'),{
