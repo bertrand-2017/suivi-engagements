@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Union Pour Viroflay — Suivi des engagements</title>
+<title>Suivi des engagements — Démo agence 2017</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --primary: #127a90;
-  --primary-light: #1a8ca3;
-  --primary-dark: #0d5f70;
-  --accent: #72b340;
-  --accent-dark: #5a9030;
-  --success: #72b340;
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1e40af;
+  --accent: #059669;
+  --accent-dark: #047857;
+  --success: #059669;
   --warning: #e8a020;
   --danger: #dc2626;
-  --gray-50: #f7fbfc;
-  --gray-100: #edf4f7;
-  --gray-200: #d6e8ed;
-  --gray-300: #b0cdd6;
-  --gray-500: #5a8a96;
-  --gray-700: #2d5a66;
-  --gray-900: #0f2d35;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-500: #64748b;
+  --gray-700: #334155;
+  --gray-900: #0f172a;
   --sidebar-w: 250px;
   --radius: 8px;
-  --shadow: 0 1px 3px rgba(18,122,144,.1), 0 1px 2px rgba(18,122,144,.07);
+  --shadow: 0 1px 3px rgba(37,99,235,.1), 0 1px 2px rgba(37,99,235,.07);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; background: var(--gray-50); color: var(--gray-900); display: flex; min-height: 100vh; }
@@ -155,18 +155,23 @@ textarea { resize: vertical; min-height: 80px; }
 </head>
 <body>
 
+<!-- DEMO BANNER -->
+<div id="demo-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:#ea580c;color:#fff;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;text-align:center;padding:6px 12px;letter-spacing:.02em">
+  ⚡ MODE DÉMO — Les données sont locales à votre navigateur · Identifiants : admin/admin123 · adjoint/adjoint123 · lecteur/lecteur123 · Contact : <a href="mailto:bertrand@2017.fr" style="color:#fff;text-decoration:underline">bertrand@2017.fr</a>
+</div>
+
 <!-- LOADING OVERLAY -->
 <div id="loading-overlay" style="position:fixed;inset:0;background:var(--primary-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:400;gap:16px">
-  <img src="logo-upv26.png" alt="Union Pour Viroflay" style="height:60px;filter:brightness(0) invert(1)" onerror="this.style.display='none'">
+  <div style="color:#fff;font-size:22px;font-weight:800;font-family:'Nunito',sans-serif;letter-spacing:.01em">Suivi des engagements</div>
   <div style="color:rgba(255,255,255,.75);font-size:13px;font-weight:600;font-family:'Nunito',sans-serif">Chargement des données…</div>
 </div>
 
 <!-- LOGIN -->
 <div id="login-page">
   <div class="login-box">
-    <div class="login-logo"><img src="logo-upv26.png" alt="Union Pour Viroflay" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:20px;font-weight:800;color:var(--primary-dark)">Union Pour <span style="color:var(--accent)">Viroflay</span></span></div>
+    <div class="login-logo"><span style="font-size:20px;font-weight:800;color:var(--primary-dark)">Suivi des <span style="color:var(--accent)">engagements</span></span></div>
     <h2>Espace de pilotage</h2>
-    <p>Suivi des engagements municipaux 2026–2032</p>
+    <p>Suivi des engagements du mandat municipal</p>
     <div class="form-group"><label>Identifiant</label><input type="text" id="login-user" autocomplete="username"></div>
     <div class="form-group"><label>Mot de passe</label><input type="password" id="login-pass" autocomplete="current-password"></div>
     <div id="login-error" style="display:none;padding:8px 12px;background:#fee2e2;color:var(--danger);border-radius:6px;font-size:13px;margin-bottom:8px;font-weight:600"></div>
@@ -178,7 +183,7 @@ textarea { resize: vertical; min-height: 80px; }
 <!-- SIDEBAR -->
 <aside id="sidebar">
   <div class="logo">
-    <img src="logo-upv26.png" alt="Union Pour Viroflay" onerror="this.outerHTML='<div style=\'color:#fff;font-weight:800;font-size:14px;padding:4px 0\'>Union Pour Viroflay</div>'">
+    <div id="sidebar-title" style="color:#fff;font-weight:800;font-size:14px;padding:4px 0">Suivi des engagements</div>
   </div>
   <nav>
     <a onclick="showPage('dashboard')" id="nav-dashboard" class="active"><span class="ico">📊</span> Tableau de bord</a>
@@ -609,7 +614,9 @@ const SAMPLE_PROMISES = [
 ];
 
 // ── STORE ─────────────────────────────────────────────────────────────────────
-const API_URL = 'api.php';
+const API_URL   = 'api.php';
+const DEMO_MODE = new URLSearchParams(window.location.search).has('demo');
+const DEMO_KEY  = 'demo2017_data';
 
 let statuses    = DEFAULT_STATUSES;
 let themes      = DEFAULT_THEMES;
@@ -620,6 +627,10 @@ let currentUser = null;
 
 async function persist(){
   if(!currentUser||currentUser.id==='pub') return;
+  if(DEMO_MODE){
+    localStorage.setItem(DEMO_KEY, JSON.stringify({statuses,themes,adjoints,promises,users}));
+    return;
+  }
   try{
     await fetch(API_URL+'?action=save',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({statuses,themes,adjoints,promises,users})});
   }catch(e){console.error('Sauvegarde échouée',e);}
@@ -635,6 +646,11 @@ function applyServerData(d){
   return hasData;
 }
 async function loadFromServer(){
+  if(DEMO_MODE){
+    const raw=localStorage.getItem(DEMO_KEY);
+    if(raw) return applyServerData(JSON.parse(raw));
+    return false;
+  }
   try{
     const r=await fetch(API_URL+'?action=load&t='+Date.now(),{credentials:'include'});
     if(!r.ok) return false;
@@ -646,6 +662,10 @@ async function loadFromServer(){
 }
 async function initializeServer(){
   await migratePasswords();
+  if(DEMO_MODE){
+    localStorage.setItem(DEMO_KEY, JSON.stringify({statuses,themes,adjoints,promises,users}));
+    return;
+  }
   try{
     await fetch(API_URL+'?action=initdata',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({statuses,themes,adjoints,promises,users})});
   }catch(e){console.error('Initialisation échouée',e);}
@@ -674,6 +694,13 @@ async function migratePasswords(){
 async function doLogin(){
   const login=document.getElementById('login-user').value.trim();
   const h=await hashPass(document.getElementById('login-pass').value);
+  if(DEMO_MODE){
+    const found=users.find(u=>u.login===login&&u.pass===h);
+    if(!found){const e=document.getElementById('login-error');e.style.display='block';e.textContent='Identifiants incorrects.';return;}
+    currentUser={...found};delete currentUser.pass;
+    document.getElementById('login-page').classList.remove('show'); initApp();
+    return;
+  }
   try{
     const r=await fetch(API_URL+'?action=login',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({login,pass:h})});
     const data=await r.json();
@@ -683,7 +710,7 @@ async function doLogin(){
   }catch(e){const err=document.getElementById('login-error');err.style.display='block';err.textContent='Erreur de connexion au serveur.';}
 }
 function doLogout(){
-  fetch(API_URL+'?action=logout',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
+  if(!DEMO_MODE) fetch(API_URL+'?action=logout',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
   currentUser=null;document.getElementById('login-page').classList.add('show');document.getElementById('login-user').value='';document.getElementById('login-pass').value='';
 }
 document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
@@ -1210,11 +1237,15 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 
 // ── BOOTSTRAP ─────────────────────────────────────────────────────────────────
 (async()=>{
+  if(DEMO_MODE){
+    document.getElementById('demo-banner').style.display='block';
+    document.body.style.paddingTop='32px';
+  }
   const hasData=await loadFromServer();
   if(!hasData){
-    // Premier déploiement : initialiser le serveur avec les 3 comptes par défaut
-    // (admin/admin123 · adjoint/adjoint123 · lecteur/lecteur123)
-    // → changer ces mots de passe immédiatement après la première connexion
+    // Premier déploiement (ou démo vierge) : initialiser avec les 3 comptes par défaut
+    // admin/admin123 · adjoint/adjoint123 · lecteur/lecteur123
+    // → changer ces mots de passe dès la première connexion en production
     await initializeServer();
   } else {
     const pChanged=await migratePasswords();
