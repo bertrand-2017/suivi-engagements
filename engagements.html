@@ -327,14 +327,30 @@ textarea { resize: vertical; min-height: 80px; }
 
 <!-- EXPORT -->
 <div class="page" id="page-export">
-  <div class="card" style="max-width:460px"><div class="card-body">
-    <div class="card-title">Export des données</div>
-    <p style="font-size:13px;color:var(--gray-500);margin-bottom:20px;font-weight:600">Export des engagements dont vous êtes responsable. Les adjoints n'exportent que leurs propres engagements.</p>
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <button class="btn btn-secondary" onclick="exportCSV()">📄 Exporter en CSV (Excel / Calc)</button>
-      <button class="btn btn-secondary" onclick="exportPDF()">🖨️ Générer un PDF imprimable</button>
-    </div>
-  </div></div>
+  <div style="display:flex;flex-direction:column;gap:20px;max-width:520px">
+
+    <div class="card"><div class="card-body">
+      <div class="card-title">📋 Export des engagements</div>
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:6px;font-weight:600">Les adjoints n'exportent que leurs propres engagements.</p>
+      <table style="font-size:12px;color:var(--gray-700);margin-bottom:16px;border-collapse:collapse;width:100%">
+        <tr><td style="padding:2px 8px 2px 0;font-weight:700;white-space:nowrap">Colonnes</td><td style="padding:2px 0;color:var(--gray-500)">N° · Engagement · Thème · Adjoint · Délégation · Statut · Horizon · Note interne · Commentaire public · Créé le · Mis à jour</td></tr>
+      </table>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn-secondary" onclick="exportCSV()">⬇️ Télécharger CSV (Excel / Calc)</button>
+        <button class="btn btn-secondary" onclick="exportPDF()">🖨️ Générer un PDF imprimable</button>
+      </div>
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <div class="card-title">👥 Export des adjoints</div>
+      <p style="font-size:13px;color:var(--gray-500);margin-bottom:6px;font-weight:600">Liste complète des élus et de leurs délégations.</p>
+      <table style="font-size:12px;color:var(--gray-700);margin-bottom:16px;border-collapse:collapse;width:100%">
+        <tr><td style="padding:2px 8px 2px 0;font-weight:700;white-space:nowrap">Colonnes</td><td style="padding:2px 0;color:var(--gray-500)">Nom · Délégation · URL Photo · Nb engagements · Nb terminés · % avancement</td></tr>
+      </table>
+      <button class="btn btn-secondary" onclick="exportAdjointsCSV()">⬇️ Télécharger CSV (Excel / Calc)</button>
+    </div></div>
+
+  </div>
 </div>
 
 <!-- VUE PUBLIQUE -->
@@ -1154,12 +1170,45 @@ function exportablePromises(){
   return promises;
 }
 
+function csvCell(v){return'"'+(v||'').toString().replace(/"/g,'""')+'"';}
+function csvDownload(rows,filename){
+  const blob=new Blob(['﻿'+rows.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+}
 function exportCSV(){
   const list=exportablePromises();
-  const h=['N°','Libellé','Thème','Horizon','Adjoint','Statut','Commentaire public','Créé le','Mis à jour'];
-  const r=list.map((p,i)=>[i+1,`"${p.label.replace(/"/g,'""')}"`,getTheme(p.themeId).name,(getHorizon(p.horizonId)||{label:''}).label,getAdjoint(p.adjointId).name,getStatus(p.statusId).label,`"${(p.publicComment||'').replace(/"/g,'""')}"`,p.created,p.updated].join(';'));
-  const blob=new Blob(['﻿'+[h.join(';'),...r].join('\n')],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='engagements-upv-viroflay.csv';a.click();
+  const isAdmin=['admin','adjoint'].includes(currentUser.role);
+  const h=['N°','Engagement','Thème','Adjoint','Délégation','Statut','Horizon','Note interne','Commentaire public','Créé le','Mis à jour'];
+  const rows=list.map((p,i)=>{
+    const adj=getAdjoint(p.adjointId);
+    const hor=HORIZONS.find(h=>h.id===p.horizonId);
+    return [
+      i+1,
+      csvCell(p.label),
+      csvCell(getTheme(p.themeId).name),
+      csvCell(adj.name),
+      csvCell(adj.role||''),
+      csvCell(getStatus(p.statusId).label),
+      csvCell(hor?hor.label:''),
+      csvCell(isAdmin?p.note||'':''),
+      csvCell(p.publicComment||''),
+      p.created||'',
+      p.updated||''
+    ].join(';');
+  });
+  csvDownload([h.join(';'),...rows],'engagements.csv');
+}
+function exportAdjointsCSV(){
+  const date=new Date().toISOString().slice(0,10);
+  const h=['Nom','Délégation','URL Photo','Nb engagements','Nb terminés','% avancement'];
+  const doneStatuses=statuses.filter(s=>s.id==='s4').map(s=>s.id); // statut "Réalisé"
+  const rows=adjoints.filter(a=>a.id!=='a0').map(a=>{
+    const ps=promises.filter(p=>p.adjointId===a.id);
+    const done=ps.filter(p=>doneStatuses.includes(p.statusId)).length;
+    const pct=ps.length?Math.round(done/ps.length*100):0;
+    return [csvCell(a.name),csvCell(a.role||''),csvCell(a.photo||''),ps.length,done,pct+'%'].join(';');
+  });
+  csvDownload([h.join(';'),...rows],'adjoints.csv');
 }
 
 function exportPDF(){
